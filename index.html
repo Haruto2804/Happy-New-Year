@@ -6,8 +6,11 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Princess Gift for Ngọc Anh 🌸</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script id="tailwind-config">
@@ -31,26 +34,173 @@
   </script>
 
   <style>
-    .glass-panel { background: rgba(251, 182, 206, 0.08); backdrop-filter: blur(16px); border: 1px solid rgba(255, 133, 162, 0.15); }
-    .text-glow-pink { text-shadow: 0 0 15px rgba(255, 133, 162, 0.8); }
-    .gift-box-wrapper { position: relative; width: 140px; height: 120px; margin: 40px auto; perspective: 1000px; }
-    .gift-box-lid { position: absolute; top: -18px; left: -5px; width: 150px; height: 40px; background: #ff85a2; border-radius: 10px; z-index: 20; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); transform-origin: bottom; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .gift-box-body { position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #ffb6c1 0%, #ff85a2 100%); border-radius: 0 0 15px 15px; box-shadow: 0 10px 25px rgba(255, 133, 162, 0.3); display: flex; align-items: center; justify-content: center; }
-    .ribbon-v { position: absolute; left: 50%; transform: translateX(-50%); width: 30px; height: 100%; background: #fff; opacity: 0.9; }
-    .bow-cute { position: absolute; top: -42px; left: 50%; transform: translateX(-50%); display: flex; z-index: 30; transition: all 0.5s ease; }
-    .bow-left, .bow-right { width: 45px; height: 35px; background: #fff; border-radius: 50% 50% 20% 50%; }
-    .bow-right { transform: scaleX(-1); }
-    @keyframes intenseShake { 0%, 100% { transform: translateX(0) rotate(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-6px) rotate(-4deg); } 20%, 40%, 60%, 80% { transform: translateX(6px) rotate(4deg); } }
-    .is-shaking { animation: intenseShake 0.7s cubic-bezier(.36, .07, .19, .97) both !important; }
-    .opened .gift-box-lid { transform: translateY(-130px) rotateX(45deg) scale(0.7); opacity: 0; }
-    .opened .bow-cute { transform: translate(-50%, -150px) scale(0.4); opacity: 0; }
-    @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    .animate-soft-pulse { animation: softPulse 2s infinite ease-in-out; }
-    #welcome-overlay { position: fixed; inset: 0; z-index: 999; background: #1a0b10; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .modal { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(0.3) rotate(-10deg); opacity: 0; pointer-events: none; }
-    .modal.active { transform: scale(1) rotate(0deg); opacity: 1; pointer-events: auto; }
-    #sparkle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .glass-panel {
+      background: rgba(251, 182, 206, 0.08);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 133, 162, 0.15);
+    }
+
+    .text-glow-pink {
+      text-shadow: 0 0 15px rgba(255, 133, 162, 0.8);
+    }
+
+    .gift-box-wrapper {
+      position: relative;
+      width: 140px;
+      height: 120px;
+      margin: 40px auto;
+      perspective: 1000px;
+    }
+
+    .gift-box-lid {
+      position: absolute;
+      top: -18px;
+      left: -5px;
+      width: 150px;
+      height: 40px;
+      background: #ff85a2;
+      border-radius: 10px;
+      z-index: 20;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform-origin: bottom;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .gift-box-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffb6c1 0%, #ff85a2 100%);
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 10px 25px rgba(255, 133, 162, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ribbon-v {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 100%;
+      background: #fff;
+      opacity: 0.9;
+    }
+
+    .bow-cute {
+      position: absolute;
+      top: -42px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      z-index: 30;
+      transition: all 0.5s ease;
+    }
+
+    .bow-left,
+    .bow-right {
+      width: 45px;
+      height: 35px;
+      background: #fff;
+      border-radius: 50% 50% 20% 50%;
+    }
+
+    .bow-right {
+      transform: scaleX(-1);
+    }
+
+    @keyframes intenseShake {
+
+      0%,
+      100% {
+        transform: translateX(0) rotate(0);
+      }
+
+      10%,
+      30%,
+      50%,
+      70%,
+      90% {
+        transform: translateX(-6px) rotate(-4deg);
+      }
+
+      20%,
+      40%,
+      60%,
+      80% {
+        transform: translateX(6px) rotate(4deg);
+      }
+    }
+
+    .is-shaking {
+      animation: intenseShake 0.7s cubic-bezier(.36, .07, .19, .97) both !important;
+    }
+
+    .opened .gift-box-lid {
+      transform: translateY(-130px) rotateX(45deg) scale(0.7);
+      opacity: 0;
+    }
+
+    .opened .bow-cute {
+      transform: translate(-50%, -150px) scale(0.4);
+      opacity: 0;
+    }
+
+    @keyframes softPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .animate-soft-pulse {
+      animation: softPulse 2s infinite ease-in-out;
+    }
+
+    #welcome-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: #1a0b10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .modal {
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scale(0.3) rotate(-10deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal.active {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #sparkle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
   </style>
 </head>
 
@@ -62,16 +212,19 @@
         <img src="./gautangqua.png" class="w-48 h-48 object-contain" alt="Bear">
       </div>
       <h1 class="font-handwriting text-4xl text-primary mb-8">99% niềm vui đang được chuyển đến Ngọc Anh!</h1>
-      <button onclick="startExperience()" class="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-2xl hover:scale-105 transition-transform">
+      <button onclick="startExperience()"
+        class="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-2xl hover:scale-105 transition-transform">
         Mở cửa trái tim 🌸
       </button>
     </div>
   </div>
 
-  <div class="relative w-full max-w-md h-[92vh] max-h-[850px] overflow-hidden bg-background-dark rounded-[50px] shadow-[0_0_80px_rgba(255,133,162,0.15)] border-[6px] border-surface-dark flex flex-col">
+  <div
+    class="relative w-full max-w-md h-[92vh] max-h-[850px] overflow-hidden bg-background-dark rounded-[50px] shadow-[0_0_80px_rgba(255,133,162,0.15)] border-[6px] border-surface-dark flex flex-col">
     <canvas id="sparkle-canvas"></canvas>
 
-    <div class="relative z-50 px-8 py-6 flex justify-between items-center text-[10px] font-bold text-primary tracking-[0.2em] uppercase bg-background-dark/80 backdrop-blur-md">
+    <div
+      class="relative z-50 px-8 py-6 flex justify-between items-center text-[10px] font-bold text-primary tracking-[0.2em] uppercase bg-background-dark/80 backdrop-blur-md">
       <div class="flex items-center gap-2">
         <span class="size-2 bg-primary rounded-full animate-ping"></span> Live Magic
       </div>
@@ -85,12 +238,15 @@
           <div class="relative size-28 rounded-full border-4 border-primary/40 overflow-hidden shadow-2xl">
             <img src="./NgocAnh.png" class="w-full h-full object-cover" alt="Avatar">
           </div>
-          <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-lg z-20">Ngọc Anh</div>
+          <div
+            class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-lg z-20">
+            Ngọc Anh</div>
         </div>
 
         <div class="mt-10 w-full glass-panel rounded-2xl p-4 max-w-[320px] mx-auto">
           <div class="flex items-center gap-4">
-            <button onclick="toggleMusic()" id="play-btn" class="size-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform">
+            <button onclick="toggleMusic()" id="play-btn"
+              class="size-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform">
               <span class="material-symbols-outlined fill-1 text-3xl">play_arrow</span>
             </button>
             <div class="flex-1 text-left overflow-hidden">
@@ -105,33 +261,55 @@
       </div>
 
       <div class="mt-10">
-        <h2 id="main-title" class="font-handwriting text-3xl text-secondary mb-10 text-glow-pink">Món quà đang chờ đợi...</h2>
-        <div id="gift-container" onclick="triggerGift()" class="gift-box-wrapper cursor-pointer animate-soft-pulse mx-auto">
-          <div class="bow-cute"><div class="bow-left"></div><div class="bow-right"></div></div>
-          <div class="gift-box-lid"><div class="ribbon-v" style="height: 40px; width: 25px;"></div></div>
-          <div class="gift-box-body"><div class="ribbon-v"></div><span class="material-symbols-outlined text-4xl text-white relative z-20 drop-shadow-lg">favorite</span></div>
+        <h2 id="main-title" class="font-handwriting text-3xl text-secondary mb-10 text-glow-pink">Món quà đang chờ
+          đợi...</h2>
+        <div id="gift-container" onclick="triggerGift()"
+          class="gift-box-wrapper cursor-pointer animate-soft-pulse mx-auto">
+          <div class="bow-cute">
+            <div class="bow-left"></div>
+            <div class="bow-right"></div>
+          </div>
+          <div class="gift-box-lid">
+            <div class="ribbon-v" style="height: 40px; width: 25px;"></div>
+          </div>
+          <div class="gift-box-body">
+            <div class="ribbon-v"></div><span
+              class="material-symbols-outlined text-4xl text-white relative z-20 drop-shadow-lg">favorite</span>
+          </div>
         </div>
-        <p id="gift-hint" class="mt-14 text-[10px] text-primary/60 font-bold uppercase tracking-[0.2em] animate-pulse">Chạm vào hộp quà nhé</p>
+        <p id="gift-hint" class="mt-14 text-[10px] text-primary/60 font-bold uppercase tracking-[0.2em] animate-pulse">
+          Chạm vào hộp quà nhé</p>
       </div>
 
       <div class="mt-10 grid grid-cols-4 gap-2 px-2">
-        <div class="glass-panel py-3 rounded-2xl"><span id="d" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Ngày</span></div>
-        <div class="glass-panel py-3 rounded-2xl"><span id="h" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Giờ</span></div>
-        <div class="glass-panel py-3 rounded-2xl"><span id="m" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Phút</span></div>
-        <div class="bg-primary/20 py-3 rounded-2xl border border-primary/30"><span id="s" class="text-xl font-black text-primary block animate-pulse">00</span><span class="text-[8px] uppercase font-bold text-primary">Giây</span></div>
+        <div class="glass-panel py-3 rounded-2xl"><span id="d" class="text-xl font-black block">00</span><span
+            class="text-[8px] uppercase font-bold opacity-60">Ngày</span></div>
+        <div class="glass-panel py-3 rounded-2xl"><span id="h" class="text-xl font-black block">00</span><span
+            class="text-[8px] uppercase font-bold opacity-60">Giờ</span></div>
+        <div class="glass-panel py-3 rounded-2xl"><span id="m" class="text-xl font-black block">00</span><span
+            class="text-[8px] uppercase font-bold opacity-60">Phút</span></div>
+        <div class="bg-primary/20 py-3 rounded-2xl border border-primary/30"><span id="s"
+            class="text-xl font-black text-primary block animate-pulse">00</span><span
+            class="text-[8px] uppercase font-bold text-primary">Giây</span></div>
       </div>
     </div>
 
-    <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent z-40">
-      <button id="main-action-btn" onclick="sendConfetti()" class="w-full h-14 bg-gradient-to-r from-primary to-[#ff6b8e] text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+    <div
+      class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent z-40">
+      <button id="main-action-btn" onclick="sendConfetti()"
+        class="w-full h-14 bg-gradient-to-r from-primary to-[#ff6b8e] text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
         <span class="material-symbols-outlined fill-1">celebration</span> Nâng ly đón 2026
       </button>
     </div>
 
-    <div id="wish-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-      <div class="glass-panel w-full max-w-sm rounded-[45px] p-8 text-center border-primary/40 relative">
+    <div id="wish-modal"
+      class="modal fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+      <div class="glass-panel w-full max-w-sm rounded-[45px] p-8 text-center border-primary/40 relative flex flex-col items-center justify-center">
+        <img src="./gau.png" alt="Gấu" class="animate-bounce size-[120px] mb-4">
         <p id="wish-display" class="text-base font-semibold text-white leading-relaxed italic px-2">...</p>
-        <button onclick="closeModal()" class="mt-8 w-full py-4 bg-primary text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg">Trân trọng 🌸</button>
+        <button onclick="closeModal()"
+          class="mt-8 w-full py-4 bg-primary text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg">Trân
+          trọng 🌸</button>
       </div>
     </div>
   </div>
@@ -151,7 +329,7 @@
     //const target = new Date().getTime() + 10000; 
 
     // KHI DÙNG THẬT, HÃY XÓA DÒNG TRÊN VÀ BỎ COMMENT DÒNG DƯỚI:
-     const target = new Date('January 1, 2026 00:00:00').getTime();
+    const target = new Date('January 1, 2026 00:00:00').getTime();
 
     const wishes = [
       "Năm mới chúc Ngọc Anh lúc nào cũng đủ năng lượng để làm những việc mình thích nhé. ✨",
@@ -190,7 +368,7 @@
       isOpening = true;
       const box = document.getElementById('gift-container');
       const hint = document.getElementById('gift-hint');
-      
+
       box.classList.remove('animate-soft-pulse');
       box.classList.add('is-shaking');
       hint.innerText = "Đang mở quà...";
@@ -230,8 +408,8 @@
 
         if (!celebrated) {
           celebrated = true;
-          sendConfetti(); 
-          triggerGift(); 
+          sendConfetti();
+          triggerGift();
           document.getElementById('main-title').innerText = "Chúc Mừng Năm Mới 2026!";
           document.getElementById('main-title').classList.add('text-glow-pink');
           document.getElementById('main-action-btn').innerHTML = '<span class="material-symbols-outlined">auto_awesome</span> HAPPY NEW YEAR 2026';
@@ -250,7 +428,7 @@
     function toggleMusic() {
       const btn = document.getElementById('play-btn');
       if (isPlaying) { audio.pause(); btn.innerHTML = '<span class="material-symbols-outlined">play_arrow</span>'; }
-      else { audio.play().catch(() => {}); btn.innerHTML = '<span class="material-symbols-outlined">pause</span>'; }
+      else { audio.play().catch(() => { }); btn.innerHTML = '<span class="material-symbols-outlined">pause</span>'; }
       isPlaying = !isPlaying;
     }
 
@@ -288,4 +466,5 @@
     setInterval(updateClock, 1000); updateClock();
   </script>
 </body>
+
 </html>
