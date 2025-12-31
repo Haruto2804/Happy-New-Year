@@ -304,7 +304,8 @@
 
     <div id="wish-modal"
       class="modal fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-      <div class="glass-panel w-full max-w-sm rounded-[45px] p-8 text-center border-primary/40 relative flex flex-col items-center justify-center">
+      <div
+        class="glass-panel w-full max-w-sm rounded-[45px] p-8 text-center border-primary/40 relative flex flex-col items-center justify-center">
         <img src="./gau.png" alt="Gấu" class="animate-bounce size-[120px] mb-4">
         <p id="wish-display" class="text-base font-semibold text-white leading-relaxed italic px-2">...</p>
         <button onclick="closeModal()"
@@ -322,24 +323,58 @@
     const audio = document.getElementById('bg-audio');
     let isPlaying = false;
     let isOpening = false;
+
+    // --- BIẾN TRẠNG THÁI KIỂM TRA NĂM MỚI ---
+    let isNewYear = false; // Mặc định chưa phải năm mới
     let celebrated = false;
 
-    // --- CẤU HÌNH THỜI GIAN TEST ---
-    // Dòng này giúp bạn TEST: Đồng hồ sẽ đếm ngược 10 giây từ lúc mở trang.
-    //const target = new Date().getTime() + 10000; 
+    // --- CẤU HÌNH THỜI GIAN ĐỂ TEST ---
+    // Để test: Bạn hãy uncomment dòng dưới (đếm ngược 10 giây từ lúc chạy web)
+    const target = new Date().getTime() + 10000;
 
-    // KHI DÙNG THẬT, HÃY XÓA DÒNG TRÊN VÀ BỎ COMMENT DÒNG DƯỚI:
-    const target = new Date('January 1, 2026 00:00:00').getTime();
+    // KHI CHẠY THẬT: Dùng dòng này
+    //const target = new Date('January 1, 2026 00:00:00').getTime();
 
+    // --- DANH SÁCH LỜI CHÚC (KHI CHƯA ĐẾN GIỜ) ---
     const wishes = [
       "Năm mới chúc Ngọc Anh lúc nào cũng đủ năng lượng để làm những việc mình thích nhé. ✨",
       "Mong là năm tới mọi áp lực của em đều biến thành động lực và niềm vui. 🚀",
       "Hy vọng 2026 sẽ là một năm mà Ngọc Anh cảm thấy hài lòng với chính mình nhất. 🌟",
       "Chúc em luôn có những người bạn tốt đồng hành và những bữa ăn ngon miệng mỗi ngày. 🍬",
       "Chúc Ngọc Anh 2026 rực rỡ, luôn là nàng công chúa hạnh phúc nhất nhé! 🌸",
-      "Năm mới mong em luôn xinh đẹp, bình yên và gặp nhiều điều ngọt ngào. ✨",
-      "Cảm ơn em đã xuất hiện. Chúc em một năm mới ấm áp và ngập tràn tiếng cười. ☁️"
+      "Năm mới mong em luôn xinh đẹp, bình yên và gặp nhiều điều ngọt ngào. ✨"
     ];
+
+    // --- BẤT NGỜ ĐẶC BIỆT CHO NĂM 2026 (SỬA NỘI DUNG Ở ĐÂY) ---
+    const specialMessage2026 = `
+    <div class="text-center">
+        <span class="text-2xl text-primary font-extrabold block mb-3 drop-shadow-sm">
+            🎉 CHÚC MỪNG NĂM MỚI 2026 🎉
+        </span>
+        
+        <span class="block text-xs uppercase tracking-widest mb-4 text-rose-200 opacity-80">
+            Happy New Year, Ngọc Anh!
+        </span>
+
+        <div class="text-sm leading-relaxed text-gray-100 space-y-3 px-2 text-justify">
+            <p>
+                Vậy là một năm nữa lại trôi qua, anh rất vui vì năm vừa rồi chúng ta đã biết nhau và có những cuộc trò chuyện thú vị. 
+            </p>
+            <p>
+                Bước sang năm 2026, chúc em có thật nhiều năng lượng để hoàn thành mọi dự định còn đang dang dở. Hy vọng năm mới sẽ mang đến cho em nhiều cơ hội, làm việc gì cũng thuận lợi và sớm đạt được những cột mốc mà em hướng tới.
+            </p>
+            <p class="text-center font-medium text-rose-100">
+                Cứ tự tin mà bùng nổ nhé! 🚀
+            </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-white/10">
+            <span class="text-yellow-300 font-bold text-lg tracking-tight">
+                HAPPY NEW YEAR 2026 ✨
+            </span>
+        </div>
+    </div>
+`;
 
     function formatTime(seconds) {
       if (isNaN(seconds)) return "00:00";
@@ -363,6 +398,7 @@
       }, 800);
     }
 
+    // --- HÀM MỞ QUÀ (ĐÃ SỬA LOGIC) ---
     function triggerGift() {
       if (isOpening) return;
       isOpening = true;
@@ -376,11 +412,26 @@
       setTimeout(() => {
         box.classList.remove('is-shaking');
         box.classList.add('opened');
+
         setTimeout(() => {
-          const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
-          document.getElementById('wish-display').innerText = randomWish;
+          const wishDisplay = document.getElementById('wish-display');
+
+          // KIỂM TRA: NẾU LÀ NĂM MỚI -> HIỆN THÔNG ĐIỆP ĐẶC BIỆT
+          if (isNewYear) {
+            wishDisplay.innerHTML = specialMessage2026; // Dùng innerHTML để hiển thị được thẻ xuống dòng, in đậm
+            fireHearts(); // Bắn tim
+            sendConfetti(); // Bắn pháo hoa giấy
+            // Có thể thêm nhạc hiệu ứng tại đây nếu muốn
+          }
+          // NẾU CHƯA PHẢI NĂM MỚI -> HIỆN RANDOM WISH
+          else {
+            const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+            wishDisplay.innerText = randomWish;
+            fireHearts();
+          }
+
           document.getElementById('wish-modal').classList.add('active');
-          fireHearts();
+
         }, 400);
       }, 750);
     }
@@ -391,7 +442,14 @@
         const box = document.getElementById('gift-container');
         box.classList.remove('opened');
         box.classList.add('animate-soft-pulse');
-        document.getElementById('gift-hint').innerText = "Chạm vào hộp quà nhé";
+
+        // Đổi lời gợi ý tùy theo thời gian
+        if (isNewYear) {
+          document.getElementById('gift-hint').innerText = "Chúc mừng năm mới!";
+        } else {
+          document.getElementById('gift-hint').innerText = "Chạm vào hộp quà nhé";
+        }
+
         isOpening = false;
       }, 500);
     }
@@ -400,16 +458,27 @@
       const now = new Date().getTime();
       const gap = target - now;
 
+      // KHI ĐẾM NGƯỢC XONG (ĐÃ SANG NĂM MỚI)
       if (gap <= 0) {
         document.getElementById('d').innerText = "00";
         document.getElementById('h').innerText = "00";
         document.getElementById('m').innerText = "00";
         document.getElementById('s').innerText = "00";
 
+        // CẬP NHẬT TRẠNG THÁI LÀ NĂM MỚI
+        isNewYear = true;
+
         if (!celebrated) {
           celebrated = true;
           sendConfetti();
-          triggerGift();
+
+          // Tự động mở quà khi vừa điểm 00:00 (nếu bạn muốn)
+          // triggerGift(); 
+
+          // Hoặc chỉ đổi text để bạn gái tự bấm mở:
+          document.getElementById('gift-hint').innerText = "🎁 CÓ BẤT NGỜ LỚN! MỞ NGAY 🎁";
+          document.getElementById('gift-hint').classList.add('text-yellow-400');
+
           document.getElementById('main-title').innerText = "Chúc Mừng Năm Mới 2026!";
           document.getElementById('main-title').classList.add('text-glow-pink');
           document.getElementById('main-action-btn').innerHTML = '<span class="material-symbols-outlined">auto_awesome</span> HAPPY NEW YEAR 2026';
@@ -417,12 +486,16 @@
         return;
       }
 
+      // VẪN ĐANG ĐẾM NGƯỢC
+      isNewYear = false;
       const second = 1000, minute = second * 60, hour = minute * 60, day = hour * 24;
       document.getElementById('d').innerText = Math.floor(gap / day);
       document.getElementById('h').innerText = Math.floor((gap % day) / hour).toString().padStart(2, '0');
       document.getElementById('m').innerText = Math.floor((gap % hour) / minute).toString().padStart(2, '0');
       document.getElementById('s').innerText = Math.floor((gap % minute) / second).toString().padStart(2, '0');
     }
+
+    // Chạy countdown
     setInterval(countdown, 1000);
 
     function toggleMusic() {
@@ -442,6 +515,7 @@
       }());
     }
 
+    // Hiệu ứng nền
     const canvas = document.getElementById('sparkle-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
