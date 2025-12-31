@@ -309,7 +309,7 @@
         <img src="./gau.png" alt="Gấu" class="animate-bounce size-[120px] mb-4">
         <p id="wish-display" class="text-base font-semibold text-white leading-relaxed italic px-2">...</p>
         <button onclick="closeModal()"
-          class="mt-8 w-full py-4 bg-primary text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg">Trân
+          class="mt-4 w-full py-4 bg-primary text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg">Trân
           trọng 🌸</button>
       </div>
     </div>
@@ -330,10 +330,10 @@
 
     // --- CẤU HÌNH THỜI GIAN ĐỂ TEST ---
     // Để test: Bạn hãy uncomment dòng dưới (đếm ngược 10 giây từ lúc chạy web)
-    //const target = new Date().getTime() + 10000;
+    const target = new Date().getTime() + 10000;
 
     // KHI CHẠY THẬT: Dùng dòng này
-    const target = new Date('January 1, 2026 00:00:00').getTime();
+    //const target = new Date('January 1, 2026 00:00:00').getTime();
 
     // --- DANH SÁCH LỜI CHÚC (KHI CHƯA ĐẾN GIỜ) ---
     const wishes = [
@@ -346,32 +346,53 @@
     ];
 
     // --- BẤT NGỜ ĐẶC BIỆT CHO NĂM 2026 (SỬA NỘI DUNG Ở ĐÂY) ---
-    const specialMessage2026 = `
-    <div class="text-center">
-        <span class="text-2xl text-primary font-extrabold block mb-3 drop-shadow-sm">
-            🎉 CHÚC MỪNG NĂM MỚI 2026 🎉
-        </span>
+    // --- BẤT NGỜ ĐẶC BIỆT CHO NĂM 2026 (PHIÊN BẢN CÓ MÃ THẺ) ---
+  const specialMessage2026 = `
+    <div class="text-center animate-fadeIn max-w-[280px] mx-auto scale-[0.95] origin-top">
+        <div class="inline-block bg-pink-50 text-pink-500 text-[8px] font-bold px-2 py-0.5 rounded-full mb-1 border border-pink-100 uppercase tracking-wider">
+            🌸 New Year Gift for Ngọc Anh
+        </div>
         
-        <span class="block text-xs uppercase tracking-widest mb-4 text-rose-200 opacity-80">
-            Happy New Year, Ngọc Anh!
-        </span>
+        <h2 class="text-lg font-bold text-pink-500 mb-2 drop-shadow-sm">Happy New Year 2026</h2>
 
-        <div class="text-sm leading-relaxed text-gray-100 space-y-3 px-2 text-justify">
-            <p>
-                Vậy là một năm nữa lại trôi qua, anh rất vui vì năm vừa rồi chúng ta đã biết nhau và có những cuộc trò chuyện thú vị. 
-            </p>
-            <p>
-                Bước sang năm 2026, chúc em có thật nhiều năng lượng để hoàn thành mọi dự định còn đang dang dở. Hy vọng năm mới sẽ mang đến cho em nhiều cơ hội, làm việc gì cũng thuận lợi và sớm đạt được những cột mốc mà em hướng tới.
-            </p>
-            <p class="text-center font-medium text-rose-100">
-                Cứ tự tin mà bùng nổ nhé! 🚀
+        <div class="relative bg-gradient-to-br from-[#ffafbd] to-[#ffc3a0] border-[1.5px] border-white rounded-xl p-3 shadow-md overflow-hidden">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold text-white/90 uppercase tracking-tighter">Vina-Friend Connection</span>
+            </div>
+
+            <div class="text-left mb-2">
+                <p class="text-[6px] text-pink-900/60 font-bold uppercase ml-1">Serial Number</p>
+                <div class="bg-white/30 backdrop-blur-sm py-1 px-3 rounded-lg border border-white/40">
+                    <span class="font-mono text-[10px] text-pink-800 font-bold">59500006827025</span>
+                </div>
+            </div>
+
+            <div class="bg-white/90 rounded-lg p-2 shadow-inner">
+                <p class="text-[7px] text-gray-400 font-bold uppercase mb-0.5">Mã nạp"Chơi game" xuyên năm mới</p>
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-sm font-black text-pink-500 tracking-wider">3385 5351 3632 58</span>
+                    <button onclick="copyToClipboard('010120268888', 'btn-code')" id="btn-code" class="text-pink-400 active:scale-90 transition-transform">
+                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-[15px] text-pink-900/60 italic font-medium mt-2">
+                "Data luôn đầy, đừng để lạc mất nhau nha!"
             </p>
         </div>
 
-        <div class="mt-6 pt-4 border-t border-white/10">
-            <span class="text-yellow-300 font-bold text-lg tracking-tight">
-                HAPPY NEW YEAR 2026 ✨
-            </span>
+        <div class="mt-2 px-1">
+            <p class="text-[15px] text-gray-600 leading-snug font-medium">
+                "Chúc Ngọc Anh năm mới rực rỡ! Dù cách nhau nghìn cây số và chỉ quen qua màn hình, 
+                nhưng cảm ơn em đã là mảnh ghép tuyệt vời nhất. Mong em luôn cười tươi, 
+                học tốt và gặp nhiều may mắn nhé!"
+            </p>
+            <div class="flex justify-center gap-2">
+                <span class="text-[15px] text-pink-400 font-bold">🍀 Luck</span>
+                <span class="text-[15px] text-pink-400 font-bold">⭐ Joy</span>
+                <span class="text-[15px] text-pink-400 font-bold">☕ Peace</span>
+            </div>
         </div>
     </div>
 `;
