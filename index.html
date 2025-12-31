@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Princess Gift for Ngọc Anh 🌸</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ff85a2",
+            "secondary": "#fbb6ce",
+            "background-dark": "#1a0b10",
+            "surface-dark": "#2d161d",
+          },
+          fontFamily: {
+            "display": ["Plus Jakarta Sans", "sans-serif"],
+            "handwriting": ["Dancing Script", "cursive"]
+          }
+        },
+      },
+    }
+  </script>
+
+  <style>
+    .glass-panel {
+      background: rgba(251, 182, 206, 0.08);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 133, 162, 0.15);
+    }
+
+    .text-glow-pink {
+      text-shadow: 0 0 15px rgba(255, 133, 162, 0.8);
+    }
+
+    /* --- GIFT BOX STRUCTURE --- */
+    .gift-box-wrapper {
+      position: relative;
+      width: 140px;
+      height: 120px;
+      margin: 40px auto;
+      perspective: 1000px;
+    }
+
+    .gift-box-lid {
+      position: absolute;
+      top: -18px;
+      left: -5px;
+      width: 150px;
+      height: 40px;
+      background: #ff85a2;
+      border-radius: 10px;
+      z-index: 20;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform-origin: bottom;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .gift-box-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffb6c1 0%, #ff85a2 100%);
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 10px 25px rgba(255, 133, 162, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ribbon-v {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 100%;
+      background: #fff;
+      opacity: 0.9;
+    }
+
+    .bow-cute {
+      position: absolute;
+      top: -42px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      z-index: 30;
+      transition: all 0.5s ease;
+    }
+
+    .bow-left,
+    .bow-right {
+      width: 45px;
+      height: 35px;
+      background: #fff;
+      border-radius: 50% 50% 20% 50%;
+    }
+
+    .bow-right {
+      transform: scaleX(-1);
+    }
+
+    @keyframes intenseShake {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-6px) rotate(-4deg); }
+      20%, 40%, 60%, 80% { transform: translateX(6px) rotate(4deg); }
+    }
+
+    .is-shaking {
+      animation: intenseShake 0.7s cubic-bezier(.36, .07, .19, .97) both !important;
+    }
+
+    .opened .gift-box-lid {
+      transform: translateY(-130px) rotateX(45deg) scale(0.7);
+      opacity: 0;
+    }
+
+    .opened .bow-cute {
+      transform: translate(-50%, -150px) scale(0.4);
+      opacity: 0;
+    }
+
+    @keyframes softPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .animate-soft-pulse {
+      animation: softPulse 2s infinite ease-in-out;
+    }
+
+    #welcome-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: #1a0b10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .modal {
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scale(0.3) rotate(-10deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal.active {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #sparkle-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0f0508] font-display flex items-center justify-center min-h-screen overflow-hidden text-rose-100">
+
+  <div id="welcome-overlay">
+    <div class="text-center p-8">
+      <div class="mb-6 animate-bounce flex justify-center">
+        <img src="./gautangqua.png" class="w-48 h-48 object-contain" alt="Gấu tặng quà">
+      </div>
+      <h1 class="font-handwriting text-4xl text-primary mb-8">Loading... 99% niềm vui đang được chuyển đến Ngọc Anh!</h1>
+      <button onclick="startExperience()"
+        class="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-2xl hover:scale-105 transition-transform">
+        Come here 🌸
+      </button>
+    </div>
+  </div>
+
+  <div class="relative w-full max-w-md h-[92vh] max-h-[850px] overflow-hidden bg-background-dark rounded-[50px] shadow-[0_0_80px_rgba(255,133,162,0.15)] border-[6px] border-surface-dark flex flex-col">
+    <canvas id="sparkle-canvas"></canvas>
+
+    <div class="relative z-50 px-8 py-6 flex justify-between items-center text-[10px] font-bold text-primary tracking-[0.2em] uppercase bg-background-dark/80 backdrop-blur-md">
+      <div class="flex items-center gap-2">
+        <span class="size-2 bg-primary rounded-full animate-ping"></span> Music Playing
+      </div>
+      <div id="current-time">12:40 PM</div>
+    </div>
+
+    <div class="relative z-10 flex-1 overflow-y-auto no-scrollbar px-6 pb-32 text-center">
+      <div class="flex flex-col items-center mt-6">
+        <div class="relative inline-block">
+          <div class="absolute -inset-3 bg-primary/30 rounded-full blur-xl animate-pulse"></div>
+          <div class="relative size-28 rounded-full border-4 border-primary/40 overflow-hidden shadow-2xl">
+            <img alt="Avatar" class="w-full h-full object-cover" src="./NgocAnh.png" />
+          </div>
+          <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-lg z-20">Ngọc Anh</div>
+        </div>
+
+        <div class="mt-10 w-full glass-panel rounded-2xl p-4 max-w-[320px] mx-auto">
+          <div class="flex items-center gap-4">
+            <button onclick="toggleMusic()" id="play-btn"
+              class="size-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform">
+              <span class="material-symbols-outlined fill-1 text-3xl">pause</span>
+            </button>
+            <div class="flex-1 text-left overflow-hidden">
+              <p class="text-[14px] font-bold truncate">Happy New Year - Ngọc Anh 🌸</p>
+              <p class="text-[9px] opacity-60 font-medium" id="music-time">00:00 / 00:00</p>
+              <div class="w-full bg-white/10 h-1 rounded-full mt-1 overflow-hidden">
+                <div id="music-progress" class="bg-primary h-full w-0 transition-all duration-300"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10">
+        <h2 class="font-handwriting text-3xl text-secondary mb-10 text-glow-pink">Món quà nhỏ từ trái tim...</h2>
+        <div id="gift-container" onclick="triggerGift()" class="gift-box-wrapper cursor-pointer animate-soft-pulse mx-auto">
+          <div class="bow-cute"><div class="bow-left"></div><div class="bow-right"></div></div>
+          <div class="gift-box-lid"><div class="ribbon-v" style="height: 40px; width: 25px;"></div></div>
+          <div class="gift-box-body"><div class="ribbon-v"></div><span class="material-symbols-outlined text-4xl text-white relative z-20 drop-shadow-lg">favorite</span></div>
+        </div>
+        <p id="gift-hint" class="mt-14 text-[10px] text-primary/60 font-bold uppercase tracking-[0.2em] animate-pulse">Chạm vào hộp quà nhé</p>
+      </div>
+
+      <div class="mt-10 grid grid-cols-4 gap-2 px-2">
+        <div class="glass-panel py-3 rounded-2xl"><span id="d" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Ngày</span></div>
+        <div class="glass-panel py-3 rounded-2xl"><span id="h" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Giờ</span></div>
+        <div class="glass-panel py-3 rounded-2xl"><span id="m" class="text-xl font-black block">00</span><span class="text-[8px] uppercase font-bold opacity-60">Phút</span></div>
+        <div class="bg-primary/20 py-3 rounded-2xl border border-primary/30"><span id="s" class="text-xl font-black text-primary block animate-pulse">00</span><span class="text-[8px] uppercase font-bold text-primary">Giây</span></div>
+      </div>
+    </div>
+
+    <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent z-40">
+      <button onclick="sendConfetti()" class="w-full h-14 bg-gradient-to-r from-primary to-[#ff6b8e] text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+        <span class="material-symbols-outlined fill-1">celebration</span> Nâng ly đón 2026
+      </button>
+    </div>
+
+    <div id="wish-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
+      <div class="glass-panel w-full max-w-sm rounded-[45px] p-8 text-center border-primary/40 relative">
+        <div class="mb-6 overflow-hidden rounded-3xl border-2 border-primary/30 shadow-2xl transform rotate-1">
+          <img src="./kyniem.png" alt="Kỷ niệm" class="w-full h-48 object-cover">
+        </div>
+        <div class="size-16 flex items-center justify-center mx-auto mb-4 animate-bounce">
+          <img src="./gautangqua.png" alt="Bear" class="w-full h-full object-contain">
+        </div>
+        <p id="wish-display" class="text-base font-semibold text-white leading-relaxed italic px-2">...</p>
+        <button onclick="closeModal()" class="mt-8 w-full py-4 bg-primary text-white rounded-2xl font-bold text-[10px] uppercase shadow-lg">Trân trọng 🌸</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-audio" loop>
+    <source src="./Năm Qua Đã Làm Gì.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById('bg-audio');
+    let isPlaying = false;
+    let isOpening = false;
+
+    // Hàm format thời gian từ giây sang mm:ss
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "00:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return mins.toString().padStart(2, '0') + ":" + secs.toString().padStart(2, '0');
+    }
+
+    // Cập nhật thời gian nhạc thực tế
+    audio.addEventListener('timeupdate', () => {
+      const musicTimeText = document.getElementById('music-time');
+      const progressLine = document.getElementById('music-progress');
+      
+      const current = audio.currentTime;
+      const total = audio.duration;
+      
+      musicTimeText.innerText = `${formatTime(current)} / ${formatTime(total)}`;
+      
+      // Cập nhật thanh chạy màu hồng
+      if (total > 0) {
+        const percentage = (current / total) * 100;
+        progressLine.style.width = percentage + "%";
+      }
+    });
+
+    function startExperience() {
+      document.getElementById('welcome-overlay').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('welcome-overlay').style.display = 'none';
+        audio.play().catch(e => console.log("Audio play blocked"));
+        isPlaying = true;
+      }, 800);
+    }
+
+    function triggerGift() {
+      if (isOpening) return;
+      isOpening = true;
+      const box = document.getElementById('gift-container');
+      const hint = document.getElementById('gift-hint');
+      box.classList.remove('animate-soft-pulse');
+      box.classList.add('is-shaking');
+      hint.innerText = "Đang kiểm tra...";
+
+      setTimeout(() => {
+        box.classList.remove('is-shaking');
+        box.classList.add('opened');
+        setTimeout(() => {
+          const wishes = [
+            "Năm mới chúc Ngọc Anh lúc nào cũng đủ năng lượng để làm những việc mình thích nhé. ✨",
+            "Mong là năm tới mọi áp lực của em đều biến thành động lực và niềm vui. 🚀",
+            "Hy vọng 2026 sẽ là một năm mà Ngọc Anh cảm thấy hài lòng với chính mình nhất. 🌟",
+            "Chúc em luôn có những người bạn tốt đồng hành và những bữa ăn ngon miệng mỗi ngày. 🍬",
+            "Chúc Ngọc Anh 2026 rực rỡ, luôn là nàng công chúa hạnh phúc nhất nhé! 🌸",
+            "Năm mới mong em luôn xinh đẹp, bình yên và gặp nhiều điều ngọt ngào. ✨",
+            "Cảm ơn em đã xuất hiện. Chúc em một năm mới ấm áp và ngập tràn tiếng cười. ☁️"
+          ];
+          const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+          document.getElementById('wish-display').innerText = randomWish;
+          document.getElementById('wish-modal').classList.add('active');
+          fireHearts();
+        }, 400);
+      }, 750);
+    }
+
+    function closeModal() {
+      document.getElementById('wish-modal').classList.remove('active');
+      setTimeout(() => {
+        const box = document.getElementById('gift-container');
+        box.classList.remove('opened');
+        box.classList.add('animate-soft-pulse');
+        document.getElementById('gift-hint').innerText = "Chạm vào hộp quà nhé";
+        isOpening = false;
+      }, 500);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('current-time').innerText = hours + ':' + minutes + ' ' + ampm;
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    const target = new Date('January 1, 2026 00:00:00').getTime();
+    function countdown() {
+      const now = new Date().getTime();
+      const gap = target - now;
+      if (gap <= 0) return;
+      const second = 1000, minute = second * 60, hour = minute * 60, day = hour * 24;
+      document.getElementById('d').innerText = Math.floor(gap / day);
+      document.getElementById('h').innerText = Math.floor((gap % day) / hour).toString().padStart(2, '0');
+      document.getElementById('m').innerText = Math.floor((gap % hour) / minute).toString().padStart(2, '0');
+      document.getElementById('s').innerText = Math.floor((gap % minute) / second).toString().padStart(2, '0');
+    }
+    setInterval(countdown, 1000);
+
+    function toggleMusic() {
+      const btn = document.getElementById('play-btn');
+      if (isPlaying) { 
+        audio.pause(); 
+        btn.innerHTML = '<span class="material-symbols-outlined">play_arrow</span>'; 
+      } else { 
+        audio.play(); 
+        btn.innerHTML = '<span class="material-symbols-outlined">pause</span>'; 
+      }
+      isPlaying = !isPlaying;
+    }
+
+    function sendConfetti() { confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 }, colors: ['#ff85a2', '#ffffff'] }); }
+    function fireHearts() {
+      var end = Date.now() + 2000;
+      (function frame() {
+        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff85a2', '#ffffff'] });
+        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff85a2', '#ffffff'] });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      }());
+    }
+
+    const canvas = document.getElementById('sparkle-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let particles = [];
+    for (let i = 0; i < 30; i++) {
+      particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 2, speed: Math.random() * 0.2 + 0.1, opacity: Math.random() });
+    }
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.globalAlpha = p.opacity; ctx.fillStyle = "#ff85a2";
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+        p.y -= p.speed; if (p.y < 0) p.y = canvas.height;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
