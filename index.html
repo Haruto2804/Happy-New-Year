@@ -43,7 +43,6 @@
       .memory-card-wrapper { width: 100% !important; padding: 0 !important; }
     }
 
-    /* Nhạc Logic Animations */
     @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .disk-rotate { animation: rotate 12s linear infinite; }
     .music-paused { animation-play-state: paused; }
@@ -104,7 +103,6 @@
       <div id="user-avatar" class="w-14 h-14 rounded-[1.2rem] overflow-hidden border-2 border-white/10 shadow-2xl"></div>
       <h1 id="user-greeting" class="font-extrabold text-xl italic text-white truncate w-full">Chào!</h1>
     </div>
-
     <nav class="flex flex-col gap-4 mt-10">
       <button onclick="switchPage('home', this)" class="nav-link active p-5 rounded-2xl text-md font-bold text-left text-white">🏠 Trang chủ</button>
       <button onclick="switchPage('timeline', this)" class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">📅 Timeline</button>
@@ -152,7 +150,7 @@
             <div class="flex flex-col items-center"><span id="secs" class="text-2xl md:text-5xl font-light text-sky-400">00</span><span class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">GIÂY</span></div>
         </div>
         <div class="reveal-text text-center">
-          <p class="text-sky-400 font-bold tracking-[0.3em] md:tracking-[0.5em] uppercase text-[9px] md:text-[11px] mb-4">Our Eternal Chapter</p>
+          <p class="text-sky-400 font-bold tracking-[0.3em] md:tracking-[0.5em] uppercase text-[9px] md:text-[11px] mb-4">Our Eternal Chapter Since Dec, 25, 2025</p>
           <div class="relative inline-block">
             <h2 class="text-[100px] md:text-[250px] font-thin text-white leading-none tracking-tighter" id="days-main">0</h2>
             <span class="absolute -right-10 md:-right-20 bottom-6 md:bottom-16 text-sky-500 text-xl md:text-5xl font-black italic tracking-tighter">DAYS</span>
@@ -166,7 +164,6 @@
                 <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter text-white">Timeline</h2>
                 <button onclick="document.getElementById('timeline-modal').classList.remove('hidden')" class="bg-white text-black px-8 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] font-black text-xs md:text-sm tracking-widest shadow-2xl hover:scale-105 transition-transform">VIẾT KỈ NIỆM</button>
             </div>
-
             <div class="flex flex-col md:flex-row gap-4 mb-16 items-start md:items-center">
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-sky-400 uppercase tracking-widest">Lọc:</span>
@@ -174,7 +171,6 @@
                 </div>
                 <button onclick="document.getElementById('filter-date').value=''; loadMemories();" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors">Hiện tất cả</button>
             </div>
-
             <div class="timeline-container">
                 <div class="timeline-line"></div>
                 <div id="timeline-content" class="space-y-12"></div>
@@ -242,29 +238,7 @@
     const playerEl = document.getElementById('floating-player');
     const waveEl = document.getElementById('mini-wave');
 
-    // Chỉnh sửa logic phát nhạc chung
-    window.loadAndPlay = (index) => {
-        if (!songs[index]) return;
-        
-        // Nếu nhấn lại bài đang phát thì Stop
-        if (currentSongIndex === index && !audio.paused) {
-            audio.pause();
-            updateUIState(false);
-            return;
-        }
-
-        currentSongIndex = index;
-        audio.src = songs[index].url;
-        document.getElementById('current-song-title').innerText = songs[index].name;
-        document.getElementById('current-song-author').innerText = songs[index].author ? `Gửi bởi: ${songs[index].author}` : "Gửi bởi: Ẩn danh";
-        
-        disk.style.transform = "scale(1.2)";
-        setTimeout(() => disk.style.transform = "scale(1)", 300);
-
-        audio.play(); 
-        updateUIState(true);
-    };
-
+    // Cập nhật trạng thái giao diện (đĩa xoay, icon, sóng nhạc)
     function updateUIState(isPlaying) {
         if (isPlaying) {
             playBtn.innerText = '⏸'; 
@@ -277,17 +251,56 @@
             disk.classList.remove('playing-glow');
             waveEl.classList.add('hidden');
         }
-        // Gọi render lại list để cập nhật icon play/stop
         renderSongList();
     }
+
+    // Hàm phát bài hát theo Index
+    window.loadAndPlay = (index) => {
+        if (!songs[index]) return;
+        
+        // Nếu nhấn đúng bài đang phát thì Pause/Resume
+        if (currentSongIndex === index && audio.src === songs[index].url) {
+            if (audio.paused) {
+                audio.play();
+                updateUIState(true);
+            } else {
+                audio.pause();
+                updateUIState(false);
+            }
+            return;
+        }
+
+        // Phát bài mới
+        currentSongIndex = index;
+        audio.src = songs[index].url;
+        document.getElementById('current-song-title').innerText = songs[index].name;
+        document.getElementById('current-song-author').innerText = songs[index].author ? `Gửi bởi: ${songs[index].author}` : "Gửi bởi: Ẩn danh";
+        
+        // Hiệu ứng nhẹ khi đổi bài
+        disk.style.transform = "scale(1.1)";
+        setTimeout(() => disk.style.transform = "scale(1)", 300);
+
+        audio.play().then(() => updateUIState(true)).catch(e => console.error("Lỗi phát nhạc:", e));
+    };
+
+    // Chức năng nút Next
+    window.nextSong = () => {
+        if (songs.length === 0) return;
+        let nextIdx = (currentSongIndex + 1) % songs.length;
+        loadAndPlay(nextIdx);
+    };
+
+    // Chức năng nút Prev
+    window.prevSong = () => {
+        if (songs.length === 0) return;
+        let prevIdx = (currentSongIndex - 1 + songs.length) % songs.length;
+        loadAndPlay(prevIdx);
+    };
 
     window.toggleMusic = () => {
         if (audio.paused) { audio.play(); updateUIState(true); }
         else { audio.pause(); updateUIState(false); }
     };
-
-    window.nextSong = () => { currentSongIndex = (currentSongIndex + 1) % songs.length; loadAndPlay(currentSongIndex); };
-    window.prevSong = () => { currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length; loadAndPlay(currentSongIndex); };
 
     window.uploadSong = async () => {
         const name = document.getElementById('song-name').value;
@@ -305,7 +318,9 @@
     };
 
     function renderSongList() {
-        document.getElementById('song-list').innerHTML = songs.map((s, i) => {
+        const listContainer = document.getElementById('song-list');
+        if(!listContainer) return;
+        listContainer.innerHTML = songs.map((s, i) => {
             const isCurrentPlaying = (currentSongIndex === i && !audio.paused);
             return `
                 <div onclick="loadAndPlay(${i})" class="bento-card p-5 rounded-2xl flex justify-between items-center border border-white/5 hover:border-sky-500/50 transition-all group cursor-pointer ${isCurrentPlaying ? 'border-sky-500/50 bg-sky-500/5' : ''}">
@@ -340,38 +355,7 @@
         audio.onended = () => nextSong();
     }
 
-    // --- TIMELINE LOGIC ---
-    window.loadMemories = (selectedDate = null) => {
-        let memoriesQuery;
-        const memoriesRef = collection(db, "memories");
-        if (selectedDate) {
-            const start = new Date(selectedDate).toISOString();
-            const end = new Date(selectedDate); end.setHours(23, 59, 59, 999);
-            memoriesQuery = query(memoriesRef, where("date", ">=", start), where("date", "<=", end.toISOString()), orderBy("date", "desc"));
-        } else {
-            memoriesQuery = query(memoriesRef, orderBy("date", "desc"));
-        }
-
-        onSnapshot(memoriesQuery, (snap) => {
-            const contentEl = document.getElementById('timeline-content');
-            if (snap.empty) { contentEl.innerHTML = `<div class="text-center py-20 text-slate-500 italic">Không có kỉ niệm ngày này...</div>`; return; }
-            contentEl.innerHTML = snap.docs.map(doc => {
-                const d = doc.data(); const isBao = d.author === 'bao'; const color = isBao ? '#0ea5e9' : '#f472b6';
-                return `<div class="memory-row flex w-full relative min-h-[150px] ${isBao ? 'md:flex-row' : 'md:flex-row-reverse'}">
-                    <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
-                    <div class="memory-card-wrapper w-full md:w-1/2 ${isBao ? 'md:pr-14' : 'md:pl-14'}">
-                        <div class="reveal-text bento-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
-                            <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${isBao ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
-                            <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
-                            <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
-                        </div>
-                    </div><div class="hidden md:block md:w-1/2"></div></div>`;
-            }).join('');
-            setTimeout(() => document.querySelectorAll('#timeline-content .reveal-text').forEach((el, i) => setTimeout(() => el.classList.add('reveal-active'), i * 150)), 100);
-        });
-    }
-
-    // --- CÁC HÀM GỐC ---
+    // --- CÁC HÀM CƠ BẢN GIỮ NGUYÊN ---
     window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
     window.togglePassword = (id) => { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; };
     window.selectUser = (id) => { selectedUserId = id; document.getElementById('profile-select').classList.add('hidden'); document.getElementById('password-box').classList.remove('hidden'); };
@@ -384,14 +368,6 @@
         sessionStorage.setItem('memory_session', JSON.stringify(userData));
         enterStudio();
       } else { alert("Sai mật khẩu rồi! ✨"); }
-    };
-
-    window.updatePassword = async () => {
-      const n = document.getElementById('new-pw').value;
-      if(!n) return alert("Vui lòng nhập mật khẩu!");
-      await updateDoc(doc(db, "users", userData.id), { password: n });
-      alert("Đã đổi mật khẩu thành công!");
-      document.getElementById('change-pw-modal').classList.add('hidden');
     };
 
     window.addMemory = async () => {
@@ -417,9 +393,7 @@
       const daysMain = document.getElementById('days-main');
       function update() {
         const diff = new Date() - start; const targetDays = Math.max(0, Math.floor(diff/86400000));
-        if (daysMain.innerText === "0") {
-          let cur = 0; const timer = setInterval(() => { cur += Math.ceil(targetDays/30); if(cur >= targetDays) { daysMain.innerText = targetDays; clearInterval(timer); } else daysMain.innerText = cur; }, 40);
-        } else daysMain.innerText = targetDays;
+        daysMain.innerText = targetDays;
         document.getElementById('hrs').innerText = String(Math.floor((diff%86400000)/3600000)).padStart(2, '0');
         document.getElementById('mins').innerText = String(Math.floor((diff%3600000)/60000)).padStart(2, '0');
         document.getElementById('secs').innerText = String(Math.floor((diff%60000)/1000)).padStart(2, '0');
@@ -442,15 +416,32 @@
       window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
     }
 
+    window.loadMemories = (selectedDate = null) => {
+        let memoriesQuery = query(collection(db, "memories"), orderBy("date", "desc"));
+        onSnapshot(memoriesQuery, (snap) => {
+            const contentEl = document.getElementById('timeline-content');
+            contentEl.innerHTML = snap.docs.map(doc => {
+                const d = doc.data(); const isBao = d.author === 'bao'; const color = isBao ? '#0ea5e9' : '#f472b6';
+                return `<div class="memory-row flex w-full relative min-h-[150px] ${isBao ? 'md:flex-row' : 'md:flex-row-reverse'}">
+                    <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
+                    <div class="memory-card-wrapper w-full md:w-1/2 ${isBao ? 'md:pr-14' : 'md:pl-14'}">
+                        <div class="reveal-text bento-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
+                            <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${isBao ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
+                            <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
+                            <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
+                        </div>
+                    </div><div class="hidden md:block md:w-1/2"></div></div>`;
+            }).join('');
+        });
+    }
+
     window.switchPage = (pageId, btn) => {
       if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
       document.querySelectorAll('.page').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-      const activePage = document.getElementById(pageId);
-      activePage.classList.remove('hidden'); activePage.classList.add('active');
+      document.getElementById(pageId).classList.remove('hidden'); document.getElementById(pageId).classList.add('active');
       document.querySelectorAll('.nav-link').forEach(l => { l.classList.add('opacity-50'); l.classList.remove('active'); });
       btn.classList.add('active'); btn.classList.remove('opacity-50');
-      document.querySelectorAll('.reveal-text').forEach(el => el.classList.remove('reveal-active'));
-      setTimeout(() => document.querySelectorAll('.active .reveal-text').forEach((el, i) => setTimeout(() => el.classList.add('reveal-active'), i * 150)), 100);
+      if (pageId === 'music-lab') renderSongList();
     };
 
     const session = sessionStorage.getItem('memory_session');
