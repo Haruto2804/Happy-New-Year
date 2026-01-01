@@ -1,72 +1,296 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Journey | Memory Studio v7.6</title>
+  <title>Our Journey | Memory Studio v8.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;600;800&display=swap"
+    rel="stylesheet">
   <style>
-    :root { --primary-bao: #0ea5e9; --primary-na: #f472b6; --bg-dark: #020617; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-dark); color: #f8fafc; overflow: hidden; height: 100vh; margin: 0; }
-    #threejs-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-    
-    .reveal-text { opacity: 0; transform: translateY(20px); filter: blur(10px); transition: all 1s cubic-bezier(0.22, 1, 0.36, 1); }
-    .reveal-active { opacity: 1 !important; transform: translateY(0) !important; filter: blur(0) !important; }
-    
-    .heartbeat-slow { animation: pulseSlow 4s ease-in-out infinite; }
-    @keyframes pulseSlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-    
-    .page { display: none; width: 100%; min-height: 100%; position: relative; z-index: 10; }
-    .page.active { display: flex; flex-direction: column; }
-    
-    .bento-card { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(25px); }
-    .nav-link.active { border-left: 5px solid white; background: rgba(255,255,255,0.08); opacity: 1 !important; }
+    :root {
+      --primary-bao: #0ea5e9;
+      --primary-na: #f472b6;
+      --bg-dark: #020617;
+    }
 
-    #sidebar { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      overflow: hidden;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #threejs-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .reveal-text {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(10px);
+      transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-active {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      filter: blur(0) !important;
+    }
+
+    .heartbeat-slow {
+      animation: pulseSlow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseSlow {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.04);
+      }
+    }
+
+    .page {
+      display: none;
+      width: 100%;
+      min-height: 100%;
+      position: relative;
+      z-index: 10;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bento-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(25px);
+    }
+
+    .nav-link.active {
+      border-left: 5px solid white;
+      background: rgba(255, 255, 255, 0.08);
+      opacity: 1 !important;
+    }
+
+    #sidebar {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+
     @media (max-width: 768px) {
-      #sidebar { position: fixed; top: 0; left: 0; transform: translateX(-100%); height: 100vh; width: 280px; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-      #sidebar.open { transform: translateX(0); }
-      #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 90; }
-      #sidebar.open + #sidebar-overlay { display: block; }
-      #floating-player { left: 1rem !important; right: 1rem !important; width: auto !important; bottom: 1rem !important; }
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        height: 100vh;
+        width: 280px;
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      #sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 90;
+      }
+
+      #sidebar.open+#sidebar-overlay {
+        display: block;
+      }
+
+      #floating-player {
+        left: 1rem !important;
+        right: 1rem !important;
+        width: auto !important;
+        bottom: 1rem !important;
+      }
     }
 
-    .timeline-container { position: relative; width: 100%; margin-top: 2rem; }
-    .timeline-line { position: absolute; left: 50%; transform: translateX(-50%); width: 2px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.1) 90%, transparent); }
-    .timeline-dot { position: absolute; left: 50%; transform: translate(-50%, 40px); width: 14px; height: 14px; border-radius: 50%; z-index: 20; }
-    
-    @media (max-width: 768px) { 
-      .timeline-line { left: 20px !important; transform: none !important; } 
-      .timeline-dot { left: 20px !important; transform: translateY(40px) !important; } 
-      .memory-row { flex-direction: column !important; padding-left: 45px !important; align-items: flex-start !important; }
-      .memory-card-wrapper { width: 100% !important; padding: 0 !important; }
+    .timeline-container {
+      position: relative;
+      width: 100%;
+      margin-top: 2rem;
     }
 
-    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .disk-rotate { animation: rotate 12s linear infinite; }
-    .music-paused { animation-play-state: paused; }
-    
-    @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(14, 165, 233, 0.2); } 50% { box-shadow: 0 0 40px rgba(14, 165, 233, 0.5); } }
-    .playing-glow { animation: glow 3s infinite ease-in-out; border-color: rgba(14, 165, 233, 0.8) !important; }
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.1) 90%, transparent);
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 40px);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      z-index: 20;
+    }
+
+    @media (max-width: 768px) {
+      .timeline-line {
+        left: 20px !important;
+        transform: none !important;
+      }
+
+      .timeline-dot {
+        left: 20px !important;
+        transform: translateY(40px) !important;
+      }
+
+      .memory-row {
+        flex-direction: column !important;
+        padding-left: 45px !important;
+        align-items: flex-start !important;
+      }
+
+      .memory-card-wrapper {
+        width: 100% !important;
+        padding: 0 !important;
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .disk-rotate {
+      animation: rotate 12s linear infinite;
+    }
+
+    .music-paused {
+      animation-play-state: paused;
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(14, 165, 233, 0.5);
+      }
+    }
+
+    .playing-glow {
+      animation: glow 3s infinite ease-in-out;
+      border-color: rgba(14, 165, 233, 0.8) !important;
+    }
 
     #floating-player {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 350px;
-        z-index: 200;
-        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.9) translateY(20px);
-        opacity: 0;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 350px;
+      z-index: 200;
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
     }
-    #floating-player.show { transform: scale(1) translateY(0); opacity: 1; }
 
-    .wave-bar { width: 3px; height: 8px; background: #0ea5e9; border-radius: 2px; }
-    .wave-active { animation: wave-anim 0.6s infinite alternate; }
-    @keyframes wave-anim { from { height: 4px; } to { height: 14px; } }
+    #floating-player.show {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 8px;
+      background: #0ea5e9;
+      border-radius: 2px;
+    }
+
+    .wave-active {
+      animation: wave-anim 0.6s infinite alternate;
+    }
+
+    @keyframes wave-anim {
+      from {
+        height: 4px;
+      }
+
+      to {
+        height: 14px;
+      }
+    }
+
+    /* Container bao quanh khung hình để giữ tỉ lệ */
+    .aspect-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      /* Đây là tỉ lệ 16:9 (9 / 16 * 100). Dùng cho video ngang/live */
+      height: 0;
+      overflow: hidden;
+      border-radius: 1.5rem;
+      background: #000;
+    }
+
+    /* Class này sẽ được thêm vào khi hệ thống nhận diện là YouTube Shorts */
+    .aspect-shorts {
+      padding-bottom: 177.77%;
+      /* Đây là tỉ lệ 9:16 (16 / 9 * 100). Dùng cho video dọc */
+      max-width: 380px;
+      /* Giới hạn chiều rộng để Shorts không bị tràn màn hình PC */
+      margin: 0 auto;
+      /* Căn giữa video dọc */
+    }
+
+    /* Ép Iframe YouTube lấp đầy container phía trên */
+    .aspect-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-wrapper {
+      width: 100%;
+      max-width: 800px;
+      /* Độ rộng tối đa của khung video trên màn hình lớn */
+      margin: 0 auto;
+      /* Căn giữa toàn bộ cụm video */
+    }
   </style>
 </head>
+
 <body class="flex flex-col md:flex-row">
   <canvas id="threejs-canvas"></canvas>
 
@@ -75,143 +299,234 @@
       <h2 class="text-4xl font-black mb-12 italic text-white tracking-tighter">Xác nhận danh tính</h2>
       <div id="profile-select" class="grid grid-cols-2 gap-6">
         <button onclick="selectUser('bao')" class="p-8 bento-card rounded-[2.5rem] hover:border-sky-500 transition-all">
-          <img src="./images/haruto.png" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-sky-500 object-cover">
+          <img src="./images/haruto.png"
+            class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-sky-500 object-cover">
           <span class="font-bold text-sky-400 uppercase text-sm">Bảo</span>
         </button>
-        <button onclick="selectUser('ngocanh')" class="p-8 bento-card rounded-[2.5rem] hover:border-pink-500 transition-all">
-          <img src="./images/NgocAnh.png" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-pink-500 object-cover">
+        <button onclick="selectUser('ngocanh')"
+          class="p-8 bento-card rounded-[2.5rem] hover:border-pink-500 transition-all">
+          <img src="./images/NgocAnh.png"
+            class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-pink-500 object-cover">
           <span class="font-bold text-pink-400 uppercase text-sm">Ngọc Anh</span>
         </button>
       </div>
       <div id="password-box" class="hidden mt-8">
         <div class="relative mb-4">
-          <input type="password" id="login-password" placeholder="Mật khẩu..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-center text-xl outline-none text-white">
-          <button onclick="togglePassword('login-password')" class="absolute right-5 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-100">👁️</button>
+          <input type="password" id="login-password" placeholder="Mật khẩu..."
+            class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-center text-xl outline-none text-white">
+          <button onclick="togglePassword('login-password')"
+            class="absolute right-5 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-100">👁️</button>
         </div>
-        <button id="btn-login-verify" class="w-full bg-white text-black py-5 rounded-2xl font-bold uppercase tracking-widest text-sm">Vào Studio</button>
+        <button id="btn-login-verify"
+          class="w-full bg-white text-black py-5 rounded-2xl font-bold uppercase tracking-widest text-sm">Vào
+          Studio</button>
       </div>
     </div>
   </div>
 
-  <div class="md:hidden flex items-center justify-between p-5 bg-black/50 backdrop-blur-md border-b border-white/5 z-50">
+  <div
+    class="md:hidden flex items-center justify-between p-5 bg-black/50 backdrop-blur-md border-b border-white/5 z-50">
     <span class="font-black italic text-lg text-sky-400">STUDIO</span>
-    <button onclick="toggleSidebar()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg></button>
+    <button onclick="toggleSidebar()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="2" stroke="currentColor" class="w-9 h-9 text-white">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg></button>
   </div>
 
-  <aside id="sidebar" class="bg-[#020617] md:bg-black/20 md:backdrop-blur-xl border-r border-white/5 p-6 flex flex-col gap-8 w-full md:w-[300px]">
+  <aside id="sidebar"
+    class="bg-[#020617] md:bg-black/20 md:backdrop-blur-xl border-r border-white/5 p-6 flex flex-col gap-8 w-full md:w-[300px]">
     <div class="flex justify-center items-center gap-5 px-2">
-      <div id="user-avatar" class="w-[100px] h-14 rounded-[1.2rem] overflow-hidden border-2 border-white/10 shadow-2xl"></div>
+      <div id="user-avatar" class="w-[100px] h-14 rounded-[1.2rem] overflow-hidden border-2 border-white/10 shadow-2xl">
+      </div>
       <h1 id="user-greeting" class="font-extrabold text-xl italic text-white truncate w-full">Chào!</h1>
     </div>
     <nav class="flex flex-col gap-4 mt-10">
-      <button onclick="switchPage('home', this)" class="nav-link active p-5 rounded-2xl text-md font-bold text-left text-white">🏠 Trang chủ</button>
-      <button onclick="switchPage('timeline', this)" class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">📅 Timeline</button>
-      <button onclick="switchPage('music-lab', this)" class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🎵 Music Lab</button>
-      <button onclick="document.getElementById('change-pw-modal').classList.remove('hidden')" class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🔑 Mật khẩu</button>
-      <button onclick="sessionStorage.clear(); window.location.reload();" class="mt-auto p-5 text-xs font-bold opacity-30 text-white uppercase text-left">Đăng xuất</button>
+      <button onclick="switchPage('home', this)"
+        class="nav-link active p-5 rounded-2xl text-md font-bold text-left text-white">🏠 Trang chủ</button>
+      <button onclick="switchPage('timeline', this)"
+        class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">📅 Timeline</button>
+      <button onclick="switchPage('video-memories', this)"
+        class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🎬 Video Clips</button>
+      <button onclick="switchPage('music-lab', this)"
+        class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🎵 Music Lab</button>
+      <button onclick="document.getElementById('change-pw-modal').classList.remove('hidden')"
+        class="nav-link p-5 rounded-2xl text-md font-bold opacity-50 text-left text-white">🔑 Mật khẩu</button>
+      <button onclick="sessionStorage.clear(); window.location.reload();"
+        class="mt-auto p-5 text-xs font-bold opacity-30 text-white uppercase text-left">Đăng xuất</button>
     </nav>
   </aside>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
   <div id="floating-player" class="bento-card p-4 rounded-[2rem] border border-white/10 shadow-2xl">
-      <div class="flex items-center gap-4">
-          <div id="music-disk" class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg overflow-hidden disk-rotate music-paused flex-shrink-0 transition-all duration-700">
-              <img src="https://cdn-icons-png.flaticon.com/512/6048/6048452.png" class="w-full h-full object-cover">
-          </div>
-          <div class="flex-1 overflow-hidden text-left">
-              <div class="flex items-center gap-2 mb-1">
-                 <p id="current-song-title" class="text-[11px] font-black text-white truncate uppercase tracking-[0.1em]">Đang tải nhạc...</p>
-                 <div id="mini-wave" class="flex gap-1 items-end h-3 hidden">
-                    <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
-                    <div class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
-                 </div>
-              </div>
-              <p id="current-song-author" class="text-[9px] text-slate-500 uppercase">Gửi bởi: ---</p>
-              <div class="flex items-center gap-5 mt-3">
-                  <button onclick="prevSong()" class="text-white opacity-40 hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-                  <button onclick="toggleMusic()" id="play-btn" class="w-9 h-9 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 active:scale-90 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]">▶</button>
-                  <button onclick="nextSong()" class="text-white opacity-40 hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z"/></svg></button>
-              </div>
-          </div>
+    <div class="flex items-center gap-4">
+      <div id="music-disk"
+        class="w-16 h-16 rounded-full border-2 border-white/20 shadow-lg overflow-hidden disk-rotate music-paused flex-shrink-0 transition-all duration-700">
+        <img src="https://cdn-icons-png.flaticon.com/512/6048/6048452.png" class="w-full h-full object-cover">
       </div>
+      <div class="flex-1 overflow-hidden text-left">
+        <div class="flex items-center gap-2 mb-1">
+          <p id="current-song-title" class="text-[11px] font-black text-white truncate uppercase tracking-[0.1em]">Đang
+            tải nhạc...</p>
+          <div id="mini-wave" class="flex gap-1 items-end h-3 hidden">
+            <div class="wave-bar wave-active" style="animation-delay: 0.1s"></div>
+            <div class="wave-bar wave-active" style="animation-delay: 0.3s"></div>
+            <div class="wave-bar wave-active" style="animation-delay: 0.5s"></div>
+          </div>
+        </div>
+        <p id="current-song-author" class="text-[9px] text-slate-500 uppercase">Gửi bởi: ---</p>
+        <div class="flex items-center gap-5 mt-3">
+          <button onclick="prevSong()"
+            class="text-white opacity-40 hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"><svg
+              class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+            </svg></button>
+          <button onclick="toggleMusic()" id="play-btn"
+            class="w-9 h-9 bg-white text-black rounded-full flex items-center justify-center hover:scale-110 active:scale-90 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]">▶</button>
+          <button onclick="nextSong()"
+            class="text-white opacity-40 hover:opacity-100 transition-opacity hover:scale-110 active:scale-90"><svg
+              class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z" />
+            </svg></button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <main class="flex-1 overflow-y-auto h-full relative">
     <section id="home" class="page active px-6 justify-center items-center">
-        <div class="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-sky-500/10 blur-[150px] rounded-full"></div>
-        <div class="reveal-text flex -space-x-8 md:-space-x-16 mb-10 heartbeat-slow">
-            <img src="./images/haruto.png" class="w-24 h-24 md:w-52 md:h-52 rounded-full border-[4px] md:border-[6px] border-sky-500 object-cover z-20 shadow-2xl">
-            <img src="./images/NgocAnh.png" class="w-24 h-24 md:w-52 md:h-52 rounded-full border-[4px] md:border-[6px] border-pink-500 object-cover z-10 shadow-2xl">
+      <div class="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-sky-500/10 blur-[150px] rounded-full"></div>
+      <div class="reveal-text flex -space-x-8 md:-space-x-16 mb-10 heartbeat-slow">
+        <img src="./images/haruto.png"
+          class="w-24 h-24 md:w-52 md:h-52 rounded-full border-[4px] md:border-[6px] border-sky-500 object-cover z-20 shadow-2xl">
+        <img src="./images/NgocAnh.png"
+          class="w-24 h-24 md:w-52 md:h-52 rounded-full border-[4px] md:border-[6px] border-pink-500 object-cover z-10 shadow-2xl">
+      </div>
+      <div
+        class="reveal-text flex gap-4 md:gap-14 items-center mb-8 bg-white/5 px-6 md:px-10 py-5 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 backdrop-blur-md">
+        <div class="flex flex-col items-center"><span id="hrs" class="text-2xl md:text-5xl font-light">00</span><span
+            class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">GIỜ</span></div>
+        <div class="flex flex-col items-center"><span id="mins" class="text-2xl md:text-5xl font-light">00</span><span
+            class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">PHÚT</span></div>
+        <div class="flex flex-col items-center"><span id="secs"
+            class="text-2xl md:text-5xl font-light text-sky-400">00</span><span
+            class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">GIÂY</span></div>
+      </div>
+      <div class="reveal-text text-center">
+        <p class="text-sky-400 font-bold tracking-[0.3em] md:tracking-[0.5em] uppercase text-[9px] md:text-[11px] mb-4">
+          Our Eternal Chapter Since Dec, 25, 2025</p>
+        <div class="relative inline-block">
+          <h2 class="text-[100px] md:text-[250px] font-thin text-white leading-none tracking-tighter" id="days-main">0
+          </h2>
+          <span
+            class="absolute -right-10 md:-right-20 bottom-6 md:bottom-16 text-sky-500 text-xl md:text-5xl font-black italic tracking-tighter">DAYS</span>
         </div>
-        <div class="reveal-text flex gap-4 md:gap-14 items-center mb-8 bg-white/5 px-6 md:px-10 py-5 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 backdrop-blur-md">
-            <div class="flex flex-col items-center"><span id="hrs" class="text-2xl md:text-5xl font-light">00</span><span class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">GIỜ</span></div>
-            <div class="flex flex-col items-center"><span id="mins" class="text-2xl md:text-5xl font-light">00</span><span class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">PHÚT</span></div>
-            <div class="flex flex-col items-center"><span id="secs" class="text-2xl md:text-5xl font-light text-sky-400">00</span><span class="text-[8px] md:text-[11px] font-black uppercase tracking-widest text-slate-500">GIÂY</span></div>
-        </div>
-        <div class="reveal-text text-center">
-          <p class="text-sky-400 font-bold tracking-[0.3em] md:tracking-[0.5em] uppercase text-[9px] md:text-[11px] mb-4">Our Eternal Chapter Since Dec, 25, 2025</p>
-          <div class="relative inline-block">
-            <h2 class="text-[100px] md:text-[250px] font-thin text-white leading-none tracking-tighter" id="days-main">0</h2>
-            <span class="absolute -right-10 md:-right-20 bottom-6 md:bottom-16 text-sky-500 text-xl md:text-5xl font-black italic tracking-tighter">DAYS</span>
-          </div>
-        </div>
+      </div>
     </section>
 
     <section id="timeline" class="page p-6 md:p-20 hidden">
-        <div class="max-w-6xl mx-auto pb-32 text-left">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-8">
-                <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter text-white">Timeline</h2>
-                <button onclick="document.getElementById('timeline-modal').classList.remove('hidden')" class="bg-white text-black px-8 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] font-black text-xs md:text-sm tracking-widest shadow-2xl hover:scale-105 transition-transform">VIẾT KỈ NIỆM</button>
-            </div>
-            <div class="flex flex-col md:flex-row gap-4 mb-16 items-start md:items-center">
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-sky-400 uppercase tracking-widest">Lọc:</span>
-                    <input type="date" id="filter-date" onchange="loadMemories(this.value)" class="bg-white/5 border border-white/10 rounded-xl py-3 pl-14 pr-4 outline-none text-white text-sm focus:border-sky-500 transition-all">
-                </div>
-                <button onclick="document.getElementById('filter-date').value=''; loadMemories();" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors">Hiện tất cả</button>
-            </div>
-            <div class="timeline-container">
-                <div class="timeline-line"></div>
-                <div id="timeline-content" class="space-y-12"></div>
-            </div>
+      <div class="max-w-6xl mx-auto pb-32 text-left">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-8">
+          <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter text-white">Timeline</h2>
+          <button onclick="document.getElementById('timeline-modal').classList.remove('hidden')"
+            class="bg-white text-black px-8 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] font-black text-xs md:text-sm tracking-widest shadow-2xl hover:scale-105 transition-transform">VIẾT
+            KỈ NIỆM</button>
         </div>
+        <div class="flex flex-col md:flex-row gap-4 mb-16 items-start md:items-center">
+          <div class="relative">
+            <span
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-sky-400 uppercase tracking-widest">Lọc:</span>
+            <input type="date" id="filter-date" onchange="loadMemories(this.value)"
+              class="bg-white/5 border border-white/10 rounded-xl py-3 pl-14 pr-4 outline-none text-white text-sm focus:border-sky-500 transition-all">
+          </div>
+          <button onclick="document.getElementById('filter-date').value=''; loadMemories();"
+            class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors">Hiện
+            tất cả</button>
+        </div>
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+          <div id="timeline-content" class="space-y-12"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="video-memories" class="page p-6 md:p-20 hidden">
+      <div class="max-w-4xl mx-auto pb-32">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-8">
+          <h2 class="text-5xl md:text-8xl font-black italic tracking-tighter text-white">Videos</h2>
+          <button onclick="document.getElementById('video-modal').classList.remove('hidden')"
+            class="bg-sky-500 text-white px-8 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] font-black text-xs md:text-sm tracking-widest shadow-2xl hover:scale-105 transition-transform">THÊM
+            VIDEO</button>
+        </div>
+        <div id="video-content" class="grid grid-cols-1 gap-12"></div>
+      </div>
     </section>
 
     <section id="music-lab" class="page p-6 md:p-20 hidden">
-        <div class="max-w-4xl mx-auto text-left">
-            <h2 class="text-5xl md:text-8xl font-black italic text-white mb-10">Music Lab</h2>
-            <div class="bento-card p-8 rounded-[2.5rem] mb-10 border-t-4 border-sky-500">
-                <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-widest text-xs">Thêm bài hát mới</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <input type="text" id="song-name" placeholder="Tên bài hát..." class="bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none">
-                    <input type="text" id="song-url" placeholder="Link nhạc (.mp3)..." class="bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none">
-                </div>
-                <button onclick="uploadSong()" class="w-full py-4 bg-white text-black font-black rounded-2xl uppercase tracking-widest text-xs">Cập nhật Album</button>
-            </div>
-            <div id="song-list" class="space-y-4 pb-20"></div>
+      <div class="max-w-4xl mx-auto text-left">
+        <h2 class="text-5xl md:text-8xl font-black italic text-white mb-10">Music Lab</h2>
+        <div class="bento-card p-8 rounded-[2.5rem] mb-10 border-t-4 border-sky-500">
+          <h3 class="text-xl font-bold text-white mb-6 uppercase tracking-widest text-xs">Thêm bài hát mới</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <input type="text" id="song-name" placeholder="Tên bài hát..."
+              class="bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none">
+            <input type="text" id="song-url" placeholder="Link nhạc (.mp3)..."
+              class="bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none">
+          </div>
+          <button onclick="uploadSong()"
+            class="w-full py-4 bg-white text-black font-black rounded-2xl uppercase tracking-widest text-xs">Cập nhật
+            Album</button>
         </div>
+        <div id="song-list" class="space-y-4 pb-20"></div>
+      </div>
     </section>
   </main>
 
-  <div id="change-pw-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10">
-      <h3 class="text-2xl font-black mb-8 italic text-white text-center">Đổi mật khẩu</h3>
-      <input type="password" id="new-pw" placeholder="Mật khẩu mới..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white mb-4">
-      <button onclick="updatePassword()" class="w-full py-4 rounded-2xl font-bold text-white bg-sky-500">Cập nhật</button>
-      <button onclick="document.getElementById('change-pw-modal').classList.add('hidden')" class="w-full mt-4 text-white opacity-50">Hủy</button>
+  <div id="video-modal"
+    class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10">
+      <h3 class="text-2xl font-black mb-6 text-white italic text-center">Thêm Video YouTube</h3>
+      <input type="text" id="v-title" placeholder="Tiêu đề video..."
+        class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white mb-4 outline-none">
+      <input type="text" id="v-url" placeholder="Dán link YouTube vào đây..."
+        class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white mb-6 outline-none">
+      <div class="flex gap-4">
+        <button onclick="addVideo()"
+          class="flex-1 py-4 rounded-2xl font-bold bg-sky-500 text-white uppercase tracking-widest text-xs">Đăng
+          Video</button>
+        <button onclick="document.getElementById('video-modal').classList.add('hidden')"
+          class="px-8 py-4 rounded-2xl font-bold bg-white/10 text-white">Hủy</button>
+      </div>
     </div>
   </div>
 
-  <div id="timeline-modal" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
+  <div id="change-pw-modal"
+    class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10">
+      <h3 class="text-2xl font-black mb-8 italic text-white text-center">Đổi mật khẩu</h3>
+      <input type="password" id="new-pw" placeholder="Mật khẩu mới..."
+        class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white mb-4">
+      <button onclick="updatePassword()" class="w-full py-4 rounded-2xl font-bold text-white bg-sky-500">Cập
+        nhật</button>
+      <button onclick="document.getElementById('change-pw-modal').classList.add('hidden')"
+        class="w-full mt-4 text-white opacity-50">Hủy</button>
+    </div>
+  </div>
+
+  <div id="timeline-modal"
+    class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300] hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-white/10 w-full max-w-lg rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
       <h3 class="text-3xl font-black mb-8 italic text-white">Ghi lại khoảnh khắc</h3>
       <div class="space-y-4">
-        <input type="text" id="m-title" placeholder="Tiêu đề kỷ niệm..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white text-left">
-        <textarea id="m-desc" placeholder="Chúng mình đã làm gì hôm nay?..." rows="4" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white resize-none text-left"></textarea>
+        <input type="text" id="m-title" placeholder="Tiêu đề kỷ niệm..."
+          class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white text-left">
+        <textarea id="m-desc" placeholder="Chúng mình đã làm gì hôm nay?..." rows="4"
+          class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white resize-none text-left"></textarea>
         <div class="flex gap-4">
-            <button onclick="addMemory()" class="flex-1 py-4 rounded-2xl font-bold text-black bg-white hover:bg-sky-400 transition-colors uppercase tracking-widest text-sm">Lưu lại</button>
-            <button onclick="document.getElementById('timeline-modal').classList.add('hidden')" class="px-8 py-4 rounded-2xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors">Hủy</button>
+          <button onclick="addMemory()"
+            class="flex-1 py-4 rounded-2xl font-bold text-black bg-white hover:bg-sky-400 transition-colors uppercase tracking-widest text-sm">Lưu
+            lại</button>
+          <button onclick="document.getElementById('timeline-modal').classList.add('hidden')"
+            class="px-8 py-4 rounded-2xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors">Hủy</button>
         </div>
       </div>
     </div>
@@ -219,7 +534,8 @@
 
   <audio id="main-audio" preload="auto"></audio>
 
-  <script type="importmap"> { "imports": { "three": "https://unpkg.com/three@0.158.0/build/three.module.js" } } </script>
+  <script
+    type="importmap"> { "imports": { "three": "https://unpkg.com/three@0.158.0/build/three.module.js" } } </script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -229,137 +545,108 @@
     const app = initializeApp(firebaseConfig); const db = getFirestore(app);
     let userData = null; let selectedUserId = null;
 
-    // --- NHẠC LOGIC ---
-    let songs = [];
-    let currentSongIndex = 0;
-    const audio = document.getElementById('main-audio');
-    const playBtn = document.getElementById('play-btn');
-    const disk = document.getElementById('music-disk');
-    const playerEl = document.getElementById('floating-player');
-    const waveEl = document.getElementById('mini-wave');
+    // --- UTILS ---
+    function getYoutubeID(url) {
+      if (!url) return null;
 
-    // Cập nhật trạng thái giao diện (đĩa xoay, icon, sóng nhạc)
-    function updateUIState(isPlaying) {
-        if (isPlaying) {
-            playBtn.innerText = '⏸'; 
-            disk.classList.remove('music-paused');
-            disk.classList.add('playing-glow');
-            waveEl.classList.remove('hidden');
-        } else {
-            playBtn.innerText = '▶'; 
-            disk.classList.add('music-paused'); 
-            disk.classList.remove('playing-glow');
-            waveEl.classList.add('hidden');
-        }
-        renderSongList();
+      // Regex đã được bổ sung thêm 'live/' để nhận diện link livestream
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/|live\/)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+
+      // Trả về ID 11 ký tự nếu khớp
+      return (match && match[2].length === 11) ? match[2] : null;
     }
+    // --- VIDEO LOGIC ---
+    window.addVideo = async () => {
+      const titleInput = document.getElementById('v-title');
+      const urlInput = document.getElementById('v-url');
+      const title = titleInput.value.trim();
+      const videoId = getYoutubeID(urlInput.value.trim());
 
-    // Hàm phát bài hát theo Index
-    window.loadAndPlay = (index) => {
-        if (!songs[index]) return;
-        
-        // Nếu nhấn đúng bài đang phát thì Pause/Resume
-        if (currentSongIndex === index && audio.src === songs[index].url) {
-            if (audio.paused) {
-                audio.play();
-                updateUIState(true);
-            } else {
-                audio.pause();
-                updateUIState(false);
-            }
-            return;
-        }
+      if (!title || !videoId) return alert("Nhập tiêu đề và dán link YouTube/Shorts chuẩn nhé!");
 
-        // Phát bài mới
-        currentSongIndex = index;
-        audio.src = songs[index].url;
-        document.getElementById('current-song-title').innerText = songs[index].name;
-        document.getElementById('current-song-author').innerText = songs[index].author ? `Gửi bởi: ${songs[index].author}` : "Gửi bởi: Ẩn danh";
-        
-        // Hiệu ứng nhẹ khi đổi bài
-        disk.style.transform = "scale(1.1)";
-        setTimeout(() => disk.style.transform = "scale(1)", 300);
-
-        audio.play().then(() => updateUIState(true)).catch(e => console.error("Lỗi phát nhạc:", e));
+      await addDoc(collection(db, "videos"), {
+        title, videoId, author: userData.name, authorId: userData.id, createdAt: serverTimestamp()
+      });
+      titleInput.value = ''; urlInput.value = '';
+      document.getElementById('video-modal').classList.add('hidden');
     };
 
-    // Chức năng nút Next
-    window.nextSong = () => {
-        if (songs.length === 0) return;
-        let nextIdx = (currentSongIndex + 1) % songs.length;
-        loadAndPlay(nextIdx);
-    };
+    function loadVideos() {
+      onSnapshot(query(collection(db, "videos"), orderBy("createdAt", "desc")), (snap) => {
+        const container = document.getElementById('video-content');
+        container.innerHTML = snap.docs.map(doc => {
+          const v = doc.data();
+          const date = v.createdAt ? v.createdAt.toDate() : new Date();
+          const color = v.authorId === 'bao' ? '#0ea5e9' : '#f472b6';
+          // Thay đoạn render trong snap.docs.map bằng đoạn này:
+          return `
+<div class="reveal-text reveal-active bento-card p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border-t-4 shadow-2xl mb-8" style="border-top-color: ${color}">
+    <div class="flex justify-between items-start mb-4 px-2">
+        <div class="text-left">
+            <h4 class="text-lg md:text-2xl font-black text-white italic leading-tight mb-1">${v.title}</h4>
+            <p class="text-[9px] md:text-[11px] uppercase font-extrabold tracking-[0.1em] opacity-70" style="color: ${color}">
+                Gửi bởi: ${v.author} • ${date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} | ${date.toLocaleDateString('vi-VN')}
+            </p>
+        </div>
+        <button onclick="deleteVideo('${doc.id}')" class="p-2 text-white/20 hover:text-red-500 transition-all hover:scale-110">✕</button>
+    </div>
 
-    // Chức năng nút Prev
-    window.prevSong = () => {
-        if (songs.length === 0) return;
-        let prevIdx = (currentSongIndex - 1 + songs.length) % songs.length;
-        loadAndPlay(prevIdx);
-    };
-
-    window.toggleMusic = () => {
-        if (audio.paused) { audio.play(); updateUIState(true); }
-        else { audio.pause(); updateUIState(false); }
-    };
-
-    window.uploadSong = async () => {
-        const name = document.getElementById('song-name').value;
-        const url = document.getElementById('song-url').value;
-        if (!name || !url) return alert("Nhập đủ thông tin nhạc nhé!");
-        await addDoc(collection(db, "songs"), { 
-            name, url, author: userData.name, createdAt: serverTimestamp() 
-        });
-        document.getElementById('song-name').value = ''; document.getElementById('song-url').value = '';
-    };
-
-    window.deleteSong = async (id, event) => { 
-        event.stopPropagation();
-        if (confirm("Xóa bài này?")) await deleteDoc(doc(db, "songs", id)); 
-    };
-
-    function renderSongList() {
-        const listContainer = document.getElementById('song-list');
-        if(!listContainer) return;
-        listContainer.innerHTML = songs.map((s, i) => {
-            const isCurrentPlaying = (currentSongIndex === i && !audio.paused);
-            return `
-                <div onclick="loadAndPlay(${i})" class="bento-card p-5 rounded-2xl flex justify-between items-center border border-white/5 hover:border-sky-500/50 transition-all group cursor-pointer ${isCurrentPlaying ? 'border-sky-500/50 bg-sky-500/5' : ''}">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center relative overflow-hidden">
-                            <img src="https://cdn-icons-png.flaticon.com/512/6048/6048452.png" class="w-full h-full object-cover opacity-20 absolute disk-rotate ${isCurrentPlaying ? '' : 'music-paused'}">
-                            <span class="relative z-10 text-xs">${isCurrentPlaying ? '⏸' : '▶'}</span>
-                        </div>
-                        <div>
-                           <p class="text-white font-bold text-sm ${isCurrentPlaying ? 'text-sky-400' : ''}">${s.name}</p>
-                           <p class="text-[9px] text-slate-500 uppercase">Người gửi: ${s.author || 'Ẩn danh'}</p>
-                        </div>
-                    </div>
-                    <button onclick="deleteSong('${s.id}', event)" class="text-red-500/50 text-xs hover:text-red-500 p-2">Xóa</button>
-                </div>`;
+    <div class="w-full flex justify-center items-center">
+        <div class="${v.isShorts ? 'w-full max-w-[320px] aspect-[9/16]' : 'w-full max-w-4xl aspect-video'} relative overflow-hidden rounded-2xl md:rounded-[1.5rem] bg-black shadow-inner">
+            <iframe 
+                class="absolute top-0 left-0 w-full h-full border-none"
+                src="https://www.youtube.com/embed/${v.videoId}" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>`;
         }).join('');
+      });
+    }
+    window.deleteVideo = async (id) => confirm("Xóa video này hả Bảo?") && await deleteDoc(doc(db, "videos", id));
+
+    // --- TIMELINE LOGIC ---
+    window.loadMemories = (selectedDate = null) => {
+      let memoriesRef = collection(db, "memories");
+      let q = query(memoriesRef, orderBy("date", "desc"));
+      if (selectedDate) {
+        const start = new Date(selectedDate).toISOString();
+        const end = new Date(new Date(selectedDate).setHours(23, 59, 59, 999)).toISOString();
+        q = query(memoriesRef, where("date", ">=", start), where("date", "<=", end), orderBy("date", "desc"));
+      }
+      onSnapshot(q, (snap) => {
+        const contentEl = document.getElementById('timeline-content');
+        if (snap.empty) { contentEl.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có kỷ niệm nào...</p>`; return; }
+        contentEl.innerHTML = snap.docs.map(doc => {
+          const d = doc.data(); const color = d.author === 'bao' ? '#0ea5e9' : '#f472b6';
+          return `<div class="memory-row flex w-full relative min-h-[150px] ${d.author === 'bao' ? 'md:flex-row' : 'md:flex-row-reverse'}">
+                    <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
+                    <div class="memory-card-wrapper w-full md:w-1/2 ${d.author === 'bao' ? 'md:pr-14' : 'md:pl-14'}">
+                        <div class="reveal-text reveal-active bento-card p-6 md:p-10 rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
+                            <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${d.author === 'bao' ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
+                            <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
+                            <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
+                        </div>
+                    </div><div class="hidden md:block md:w-1/2"></div></div>`;
+        }).join('');
+      });
     }
 
-    function initMusicSystem() {
-        onSnapshot(query(collection(db, "songs"), orderBy("createdAt", "desc")), (snap) => {
-            songs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderSongList();
-            if (songs.length > 0) {
-                playerEl.classList.add('show');
-                if(!audio.src) {
-                    audio.src = songs[0].url;
-                    document.getElementById('current-song-title').innerText = songs[0].name;
-                    document.getElementById('current-song-author').innerText = songs[0].author ? `Gửi bởi: ${songs[0].author}` : "Gửi bởi: Ẩn danh";
-                }
-            }
-        });
-        audio.onended = () => nextSong();
-    }
+    window.addMemory = async () => {
+      const t = document.getElementById('m-title').value; const d = document.getElementById('m-desc').value;
+      if (!t || !d) return alert("Nhập đủ thông tin nhé!");
+      await addDoc(collection(db, "memories"), { title: t, desc: d, author: userData.id, date: new Date().toISOString() });
+      document.getElementById('m-title').value = ''; document.getElementById('m-desc').value = '';
+      document.getElementById('timeline-modal').classList.add('hidden');
+    };
 
-    // --- CÁC HÀM CƠ BẢN GIỮ NGUYÊN ---
-    window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
-    window.togglePassword = (id) => { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; };
+    // --- SYSTEM LOGIC ---
     window.selectUser = (id) => { selectedUserId = id; document.getElementById('profile-select').classList.add('hidden'); document.getElementById('password-box').classList.remove('hidden'); };
-    
+    window.togglePassword = (id) => { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; };
+    window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
+
     document.getElementById('btn-login-verify').onclick = async () => {
       const pass = document.getElementById('login-password').value;
       const userDoc = await getDoc(doc(db, "users", selectedUserId));
@@ -367,105 +654,102 @@
         userData = { id: selectedUserId, name: userDoc.data().name || (selectedUserId === 'bao' ? 'Bảo' : 'Ngọc Anh') };
         sessionStorage.setItem('memory_session', JSON.stringify(userData));
         enterStudio();
-      } else { alert("Sai mật khẩu rồi! ✨"); }
+      } else alert("Sai mật khẩu rồi! ✨");
     };
 
-    window.addMemory = async () => {
-        const title = document.getElementById('m-title').value;
-        const desc = document.getElementById('m-desc').value;
-        if(!title || !desc) return alert("Hãy nhập đầy đủ thông tin nè!");
-        await addDoc(collection(db, "memories"), { title, desc, author: userData.id, date: new Date().toISOString() });
-        document.getElementById('m-title').value = ''; document.getElementById('m-desc').value = '';
-        document.getElementById('timeline-modal').classList.add('hidden');
+    window.updatePassword = async () => {
+      const np = document.getElementById('new-pw').value;
+      if (!np) return alert("Nhập mật khẩu mới đã!");
+      await updateDoc(doc(db, "users", userData.id), { password: np });
+      alert("Đã đổi thành công! 🔑"); document.getElementById('change-pw-modal').classList.add('hidden');
     };
 
     function enterStudio() {
       document.getElementById('login-overlay').style.display = 'none';
-      const isBao = userData.id === 'bao';
       document.getElementById('user-greeting').innerText = `Chào ${userData.name} ✨`;
-      document.getElementById('user-avatar').innerHTML = `<img src="${isBao ? './images/haruto.png' : './images/NgocAnh.png'}" class="w-full h-full object-cover">`;
-      initMusicSystem(); initTimer(); initThreeJS(); loadMemories(); 
-      setTimeout(() => document.querySelectorAll('.active .reveal-text').forEach((el, i) => setTimeout(() => el.classList.add('reveal-active'), i * 150)), 100);
+      document.getElementById('user-avatar').innerHTML = `<img src="${userData.id === 'bao' ? './images/haruto.png' : './images/NgocAnh.png'}" class="w-full h-full object-cover">`;
+      loadMemories(); loadVideos(); initMusicSystem(); initTimer(); initThreeJS();
+      setTimeout(() => document.querySelectorAll('.active .reveal-text').forEach(el => el.classList.add('reveal-active')), 200);
     }
 
+    window.switchPage = (pid, btn) => {
+      if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'hidden'));
+      document.querySelectorAll('.page').forEach(p => p.id !== pid && p.classList.add('hidden'));
+      document.getElementById(pid).classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.add('opacity-50'));
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      btn.classList.add('active'); btn.classList.remove('opacity-50');
+      setTimeout(() => document.querySelectorAll(`#${pid} .reveal-text`).forEach(el => el.classList.add('reveal-active')), 50);
+    };
+
+    // --- TIMER & MUSIC ---
     function initTimer() {
       const start = new Date('2025-12-15T00:00:00');
-      const daysMain = document.getElementById('days-main');
-      function update() {
-        const diff = new Date() - start; const targetDays = Math.max(0, Math.floor(diff/86400000));
-        daysMain.innerText = targetDays;
-        document.getElementById('hrs').innerText = String(Math.floor((diff%86400000)/3600000)).padStart(2, '0');
-        document.getElementById('mins').innerText = String(Math.floor((diff%3600000)/60000)).padStart(2, '0');
-        document.getElementById('secs').innerText = String(Math.floor((diff%60000)/1000)).padStart(2, '0');
-      }
+      const update = () => {
+        const diff = new Date() - start;
+        document.getElementById('days-main').innerText = Math.floor(diff / 86400000);
+        document.getElementById('hrs').innerText = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+        document.getElementById('mins').innerText = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+        document.getElementById('secs').innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      };
       update(); setInterval(update, 1000);
     }
 
     function initThreeJS() {
-      const scene = new THREE.Scene(); 
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threejs-canvas'), antialias: true, alpha: true });
+      const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threejs-canvas'), alpha: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       const starGeo = new THREE.BufferGeometry(); const starPoints = new Float32Array(2000 * 3);
-      for(let i=0; i<6000; i++) starPoints[i] = (Math.random()-0.5)*100;
+      for (let i = 0; i < 6000; i++) starPoints[i] = (Math.random() - 0.5) * 100;
       starGeo.setAttribute('position', new THREE.BufferAttribute(starPoints, 3));
-      const starMesh = new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.1, transparent: true, opacity: 0.3}));
+      const starMesh = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.3 }));
       scene.add(starMesh); camera.position.z = 5;
-      function animate() { requestAnimationFrame(animate); starMesh.rotation.y += 0.0003; renderer.render(scene, camera); }
-      animate();
-      window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+      function animate() { requestAnimationFrame(animate); starMesh.rotation.y += 0.0003; renderer.render(scene, camera); } animate();
     }
 
-  window.loadMemories = (selectedDate = null) => {
-    let memoriesRef = collection(db, "memories");
-    let q = query(memoriesRef, orderBy("date", "desc"));
-
-    // Logic lọc ngày nếu có chọn
-    if (selectedDate) {
-        const start = new Date(selectedDate).toISOString();
-        const end = new Date(new Date(selectedDate).setHours(23,59,59,999)).toISOString();
-        q = query(memoriesRef, where("date", ">=", start), where("date", "<=", end), orderBy("date", "desc"));
-    }
-
-    onSnapshot(q, (snap) => {
-        const contentEl = document.getElementById('timeline-content');
-        if (snap.empty) {
-            contentEl.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có kỷ niệm nào được ghi lại...</p>`;
-            return;
+    let songs = []; let cIdx = 0; const audio = document.getElementById('main-audio');
+    function initMusicSystem() {
+      onSnapshot(query(collection(db, "songs"), orderBy("createdAt", "desc")), (snap) => {
+        songs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (songs.length > 0 && !audio.src) {
+          audio.src = songs[0].url;
+          document.getElementById('current-song-title').innerText = songs[0].name;
+          document.getElementById('current-song-author').innerText = `Gửi bởi: ${songs[0].author}`;
+          document.getElementById('floating-player').classList.add('show');
         }
+        renderSongList();
+      });
+    }
 
-        contentEl.innerHTML = snap.docs.map(doc => {
-            const d = doc.data();
-            const isBao = d.author === 'bao';
-            const color = isBao ? '#0ea5e9' : '#f472b6';
-            
-            // Thêm class reveal-active trực tiếp nếu không muốn chờ animation bị lỗi
-            return `<div class="memory-row flex w-full relative min-h-[150px] ${isBao ? 'md:flex-row' : 'md:flex-row-reverse'}">
-                <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
-                <div class="memory-card-wrapper w-full md:w-1/2 ${isBao ? 'md:pr-14' : 'md:pl-14'}">
-                    <div class="reveal-text reveal-active bento-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
-                        <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${isBao ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
-                        <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
-                        <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
-                    </div>
-                </div>
-                <div class="hidden md:block md:w-1/2"></div>
-            </div>`;
-        }).join('');
-    });
-}
+    function renderSongList() {
+      const list = document.getElementById('song-list');
+      if (!list) return;
+      list.innerHTML = songs.map((s, i) => `
+        <div onclick="loadAndPlay(${i})" class="bento-card p-5 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/5 transition-all">
+            <p class="text-white font-bold text-sm">${s.name}</p>
+            <button onclick="event.stopPropagation(); deleteSong('${s.id}')" class="text-red-500 opacity-30 hover:opacity-100">Xóa</button>
+        </div>`).join('');
+    }
 
-    window.switchPage = (pageId, btn) => {
-      if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
-      document.querySelectorAll('.page').forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
-      document.getElementById(pageId).classList.remove('hidden'); document.getElementById(pageId).classList.add('active');
-      document.querySelectorAll('.nav-link').forEach(l => { l.classList.add('opacity-50'); l.classList.remove('active'); });
-      btn.classList.add('active'); btn.classList.remove('opacity-50');
-      if (pageId === 'music-lab') renderSongList();
+    window.loadAndPlay = (i) => { cIdx = i; audio.src = songs[i].url; audio.play(); updateUI(true); document.getElementById('current-song-title').innerText = songs[i].name; };
+    window.toggleMusic = () => audio.paused ? (audio.play(), updateUI(true)) : (audio.pause(), updateUI(false));
+    window.nextSong = () => { cIdx = (cIdx + 1) % songs.length; loadAndPlay(cIdx); };
+    window.prevSong = () => { cIdx = (cIdx - 1 + songs.length) % songs.length; loadAndPlay(cIdx); };
+    window.deleteSong = async (id) => confirm("Xóa bài này?") && await deleteDoc(doc(db, "songs", id));
+    window.uploadSong = async () => {
+      const n = document.getElementById('song-name').value; const u = document.getElementById('song-url').value;
+      if (n && u) { await addDoc(collection(db, "songs"), { name: n, url: u, author: userData.name, createdAt: serverTimestamp() }); document.getElementById('song-name').value = ''; document.getElementById('song-url').value = ''; }
     };
+
+    function updateUI(playing) {
+      document.getElementById('play-btn').innerText = playing ? '⏸' : '▶';
+      document.getElementById('music-disk').classList[playing ? 'remove' : 'add']('music-paused');
+    }
 
     const session = sessionStorage.getItem('memory_session');
     if (session) { userData = JSON.parse(session); enterStudio(); }
   </script>
 </body>
+
 </html>
