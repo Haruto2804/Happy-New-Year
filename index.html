@@ -416,24 +416,44 @@
       window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
     }
 
-    window.loadMemories = (selectedDate = null) => {
-        let memoriesQuery = query(collection(db, "memories"), orderBy("date", "desc"));
-        onSnapshot(memoriesQuery, (snap) => {
-            const contentEl = document.getElementById('timeline-content');
-            contentEl.innerHTML = snap.docs.map(doc => {
-                const d = doc.data(); const isBao = d.author === 'bao'; const color = isBao ? '#0ea5e9' : '#f472b6';
-                return `<div class="memory-row flex w-full relative min-h-[150px] ${isBao ? 'md:flex-row' : 'md:flex-row-reverse'}">
-                    <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
-                    <div class="memory-card-wrapper w-full md:w-1/2 ${isBao ? 'md:pr-14' : 'md:pl-14'}">
-                        <div class="reveal-text bento-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
-                            <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${isBao ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
-                            <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
-                            <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
-                        </div>
-                    </div><div class="hidden md:block md:w-1/2"></div></div>`;
-            }).join('');
-        });
+  window.loadMemories = (selectedDate = null) => {
+    let memoriesRef = collection(db, "memories");
+    let q = query(memoriesRef, orderBy("date", "desc"));
+
+    // Logic lọc ngày nếu có chọn
+    if (selectedDate) {
+        const start = new Date(selectedDate).toISOString();
+        const end = new Date(new Date(selectedDate).setHours(23,59,59,999)).toISOString();
+        q = query(memoriesRef, where("date", ">=", start), where("date", "<=", end), orderBy("date", "desc"));
     }
+
+    onSnapshot(q, (snap) => {
+        const contentEl = document.getElementById('timeline-content');
+        if (snap.empty) {
+            contentEl.innerHTML = `<p class="text-center opacity-30 py-20 text-white">Chưa có kỷ niệm nào được ghi lại...</p>`;
+            return;
+        }
+
+        contentEl.innerHTML = snap.docs.map(doc => {
+            const d = doc.data();
+            const isBao = d.author === 'bao';
+            const color = isBao ? '#0ea5e9' : '#f472b6';
+            
+            // Thêm class reveal-active trực tiếp nếu không muốn chờ animation bị lỗi
+            return `<div class="memory-row flex w-full relative min-h-[150px] ${isBao ? 'md:flex-row' : 'md:flex-row-reverse'}">
+                <div class="timeline-dot" style="background: ${color}; box-shadow: 0 0 15px ${color}"></div>
+                <div class="memory-card-wrapper w-full md:w-1/2 ${isBao ? 'md:pr-14' : 'md:pl-14'}">
+                    <div class="reveal-text reveal-active bento-card p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] inline-block w-full border-t-4 shadow-2xl" style="border-top-color: ${color}">
+                        <p class="text-[10px] md:text-[11px] font-black uppercase mb-3 tracking-[0.2em]" style="color: ${color}">${isBao ? 'Bảo' : 'Ngọc Anh'} • ${new Date(d.date).toLocaleDateString('vi-VN')}</p>
+                        <h4 class="text-2xl md:text-3xl font-black text-white italic text-left mb-3">${d.title}</h4>
+                        <p class="text-slate-400 text-sm md:text-lg italic text-left leading-relaxed">"${d.desc}"</p>
+                    </div>
+                </div>
+                <div class="hidden md:block md:w-1/2"></div>
+            </div>`;
+        }).join('');
+    });
+}
 
     window.switchPage = (pageId, btn) => {
       if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
