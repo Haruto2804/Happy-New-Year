@@ -413,7 +413,7 @@
       </div>
       <div class="reveal-text text-center">
         <p class="text-sky-400 font-bold tracking-[0.3em] md:tracking-[0.5em] uppercase text-[9px] md:text-[11px] mb-4">
-          Our Eternal Chapter Since Dec, 25, 2025</p>
+          Our Eternal Chapter Since Dec, 15, 2025</p>
         <div class="relative inline-block">
           <h2 class="text-[100px] md:text-[250px] font-thin text-white leading-none tracking-tighter" id="days-main">0
           </h2>
@@ -581,22 +581,26 @@
           const color = v.authorId === 'bao' ? '#0ea5e9' : '#f472b6';
           // Thay đoạn render trong snap.docs.map bằng đoạn này:
           return `
-<div class="reveal-text reveal-active bento-card p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border-t-4 shadow-2xl mb-8" style="border-top-color: ${color}">
-    <div class="flex justify-between items-start mb-4 px-2">
-        <div class="text-left">
-            <h4 class="text-lg md:text-2xl font-black text-white italic leading-tight mb-1">${v.title}</h4>
-            <p class="text-[9px] md:text-[11px] uppercase font-extrabold tracking-[0.1em] opacity-70" style="color: ${color}">
-                Gửi bởi: ${v.author} • ${date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} | ${date.toLocaleDateString('vi-VN')}
+<div class="reveal-text reveal-active bento-card p-3 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] border-t-4 shadow-2xl mb-6 w-full mx-auto overflow-hidden" style="border-top-color: ${color}">
+    <div class="flex justify-between items-start mb-3 px-1">
+        <div class="text-left flex-1 min-w-0 pr-4">
+            <h4 class="text-[15px] md:text-2xl font-black text-white italic leading-tight mb-1 truncate md:whitespace-normal">
+                ${v.title}
+            </h4>
+            <p class="text-[9px] md:text-[11px] uppercase font-extrabold tracking-wider opacity-60" style="color: ${color}">
+                ${v.author} • ${date.toLocaleDateString('vi-VN')}
             </p>
         </div>
-        <button onclick="deleteVideo('${doc.id}')" class="p-2 text-white/20 hover:text-red-500 transition-all hover:scale-110">✕</button>
+        <button onclick="deleteVideo('${doc.id}')" class="text-white/30 hover:text-red-500 p-1">✕</button>
     </div>
 
-    <div class="w-full flex justify-center items-center">
-        <div class="${v.isShorts ? 'w-full max-w-[320px] aspect-[9/16]' : 'w-full max-w-4xl aspect-video'} relative overflow-hidden rounded-2xl md:rounded-[1.5rem] bg-black shadow-inner">
+    <div class="w-full flex justify-center">
+        <div class="relative w-full ${v.isShorts ? 'max-w-[280px] md:max-w-[320px] aspect-[9/16]' : 'aspect-video'} bg-black rounded-xl overflow-hidden shadow-lg">
             <iframe 
-                class="absolute top-0 left-0 w-full h-full border-none"
-                src="https://www.youtube.com/embed/${v.videoId}" 
+                class="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/${v.videoId}?rel=0&modestbranding=1" 
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
             </iframe>
         </div>
